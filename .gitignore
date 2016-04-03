@@ -1,0 +1,12 @@
+# Do not track project executable file
+tcpstats*
+
+# Intermediate build files
+build/
+CMakeFiles/
+Makefile
+CMakeCache.txt
+cmake_install.cmake
+
+# YCM vim plugin
+.ycm_extra_conf.py*
