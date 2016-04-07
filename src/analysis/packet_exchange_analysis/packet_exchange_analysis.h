@@ -6,8 +6,10 @@
 class PacketExchangeAnalysis : public StreamAnalysis
 {
 public:
+	virtual void accept(StreamAnalysisVisitor& visitor) override;
+
 	virtual std::string name() const override { return "Packet Exchange"; }
-	virtual Json::Value run(const TcpStream& stream) override;
+	virtual void run(const TcpStream& stream) override;
 };
 
 #endif

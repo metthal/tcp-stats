@@ -16,15 +16,22 @@ void AnalysisManager::add(std::unique_ptr<StreamAnalysis> analysis)
 	_analyzers.push_back(std::move(analysis));
 }
 
-Json::Value AnalysisManager::runAll(const TcpStream& stream)
+bool AnalysisManager::runAll(const TcpStream& stream)
 {
-	Json::Value root;
-
+	/*std::vector outputs;
 	for (auto& analysis : _analyzers)
 	{
-		auto result = analysis->run(stream);
-		root[snakeCaseString(analysis->name())] = result;
+		outputs.push_back(analysis->run(stream));
 	}
 
-	return root;
+	return outputs;*/
+	return false;
+}
+
+void AnalysisManager::visitAll(StreamAnalysisVisitor& visitor)
+{
+	for (const auto& analysis : _analyzers)
+	{
+		analysis->accept(visitor);
+	}
 }

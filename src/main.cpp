@@ -3,6 +3,7 @@
 #include "parser/pcapng_parser.h"
 #include "analysis/all_analyses.h"
 #include "analysis/analysis_manager.h"
+#include "presentation/all_presenters.h"
 #include "utils/exceptions.h"
 
 void printHelp()
@@ -31,13 +32,14 @@ int main(int argc, char* argv[])
 	try
 	{
 		auto pcapFile = PcapngFile::createFromPath(std::string{argv[1]});
-		auto pcapParser = std::make_unique<PcapngParser>(std::move(pcapFile));
-		auto stream = pcapParser->parse();
 
-		auto json = AnalysisManager::instance().runAll(*stream.get());
+		auto pcapParser = PcapngParser(std::move(pcapFile));
+		auto stream = pcapParser.parse();
 
-		Json::StyledWriter writer;
-		std::cout << writer.write(json) << std::endl;
+		auto outputs = AnalysisManager::instance().runAll(*stream.get());
+
+		auto webPresenter = WebPresenter("xmilko01.json");
+		AnalysisManager::instance().visitAll(webPresenter);
 	}
 	catch (const BaseException& ex)
 	{

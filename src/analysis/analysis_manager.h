@@ -17,7 +17,8 @@ public:
 	static AnalysisManager& instance();
 
 	void add(std::unique_ptr<StreamAnalysis> analysis);
-	Json::Value runAll(const TcpStream& stream);
+	bool runAll(const TcpStream& stream);
+	void visitAll(StreamAnalysisVisitor& visitor);
 
 private:
 	AnalysisManager();

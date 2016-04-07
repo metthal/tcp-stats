@@ -1,9 +1,14 @@
 #include "analysis/packet_exchange_analysis/packet_exchange_analysis.h"
-#include "utils/conversion.h"
+#include "analysis/stream_analysis_visitor.h"
 
-Json::Value PacketExchangeAnalysis::run(const TcpStream& stream)
+void PacketExchangeAnalysis::accept(StreamAnalysisVisitor& visitor)
 {
-	Json::Value root;
+	visitor.visit(*this);
+}
+
+void PacketExchangeAnalysis::run(const TcpStream& stream)
+{
+/*	Json::Value root;
 
 	for (const auto& packet : stream)
 	{
@@ -17,5 +22,5 @@ Json::Value PacketExchangeAnalysis::run(const TcpStream& stream)
 		root.append(packetValue);
 	}
 
-	return root;
+	return emitOutput(OutputType::Table, root);*/
 }

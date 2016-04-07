@@ -8,11 +8,15 @@
 
 #include "stream/tcp_stream.h"
 
+class StreamAnalysisVisitor;
+
 class StreamAnalysis
 {
 public:
+	virtual void accept(StreamAnalysisVisitor& visitor) = 0;
+
 	virtual std::string name() const = 0;
-	virtual Json::Value run(const TcpStream& stream) = 0;
+	virtual void run(const TcpStream& stream) = 0;
 };
 
 #endif
