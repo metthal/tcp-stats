@@ -19,99 +19,14 @@
 		</ul>
 	</nav>
 	<div id="analysis-container" class="container">
-		<div class="analysis">
-			<div class="analysis-header">
-				Key-value analysis
-				<span class="analysis-header-arrow pull-right glyphicon glyphicon-menu-up"></span>
-			</div>
-			<div class="analysis-body">
-				<table class="table table-striped key-value-table">
-					<tr>
-						<td>Key 1</td>
-						<td>Value 1</td>
-					</tr>
-					<tr>
-						<td>Key 1</td>
-						<td>Value 1</td>
-					</tr>
-					<tr>
-						<td>Key 1</td>
-						<td>Value 1</td>
-					</tr>
-				</table>
-			</div>
-		</div>
-		<div class="analysis">
-			<div class="analysis-header">
-				Table analysis
-				<span class="analysis-header-arrow pull-right glyphicon glyphicon-menu-up"></span>
-			</div>
-			<div class="analysis-body">
-				<table class="table">
-					<thead>
-						<tr>
-							<th>Header 1</th>
-							<th>Header 2</th>
-							<th>Header 3</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td>Data 1</td>
-							<td>Data 2</td>
-							<td>Data 3</td>
-						</tr>
-						<tr>
-							<td>Data 1</td>
-							<td>Data 2</td>
-							<td>Data 3</td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
-		</div>
-		<div class="analysis">
-			<div class="analysis-header">
-				Graph analysis
-				<span class="analysis-header-arrow pull-right glyphicon glyphicon-menu-up"></span>
-			</div>
-			<div class="analysis-body">
-				<div class="graph" id="demo-chart">
-				<script type="text/javascript">
-$(function () { 
-	$("#demo-chart").highcharts({
-		chart: {
-			type: 'bar',
-			width: $("#demo-chart").closest(".analysis").width(),
-			spacingRight: 50
-		},
-		title: {
-			text: 'Fruit Consumption'
-		},
-		xAxis: {
-			categories: ['Apples', 'Bananas', 'Oranges']
-		},
-		yAxis: {
-			title: {
-				text: 'Fruit eaten'
-			}
-		},
-		series: [{
-			name: 'Jane',
-			data: [1, 0, 4]
-		}, {
-			name: 'John',
-			data: [5, 7, 3]
-		}]
-	});
-});
-				</script>
-				</div>
-			</div>
+		<div id="no-analysis-found" class="center-block text-center">
+			<h1 class="glyphicon glyphicon-exclamation-sign"></h1>
+			<h1>No data available</h1>
+			<h3>Run <i>tcpstats</i> to generate output file to display</h3>
 		</div>
 	</div>
 	<div id="about-container" class="container">
-		<div class=".about">
+		<div class="about">
 			<h1>About</h1>
 		</div>
 	</div>
