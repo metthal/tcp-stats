@@ -44,5 +44,4 @@ $(function() {
 	initMenuActions();
 	initAnalysis();
 	initAbout();
-	console.log(data);
 });
