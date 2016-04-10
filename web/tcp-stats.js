@@ -68,12 +68,13 @@ function createKeyValueData(data) {
 
 function setupAnalysisHandlers() {
 	$(".analysis").each(function() {
+		var header = $(this).children(".analysis-header");
 		var body = $(this).children(".analysis-body");
 		var arrow = $(this).find(".analysis-header-arrow");
 
 		$(body).hide();
 
-		$(this).click(function() {
+		$(header).click(function() {
 			if ($(body).is(":visible")) {
 				$(body).slideUp();
 				$(arrow).removeClass("rotate-down");
