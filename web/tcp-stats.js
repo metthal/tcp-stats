@@ -1,4 +1,20 @@
-$(function() {
+function initMenuActions() {
+	$("#menu-analyses").click(function() {
+		$("#menu-analyses").addClass("active");
+		$("#menu-about").removeClass("active");
+		$("#analysis-container").fadeIn();
+		$("#about-container").hide();
+	});
+
+	$("#menu-about").click(function() {
+		$("#menu-about").addClass("active");
+		$("#menu-analyses").removeClass("active");
+		$("#about-container").fadeIn();
+		$("#analysis-container").hide();
+	});
+}
+
+function initAnalysis() {
 	$(".analysis").each(function() {
 		var body = $(this).children(".analysis-body");
 		var arrow = $(this).find(".analysis-header-arrow");
@@ -18,4 +34,15 @@ $(function() {
 			}
 		});
 	});
+}
+
+function initAbout() {
+	$("#about-container").hide();
+}
+
+$(function() {
+	initMenuActions();
+	initAnalysis();
+	initAbout();
+	console.log(data);
 });

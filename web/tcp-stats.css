@@ -50,3 +50,18 @@
 	margin-right: auto;
 	display: inline-block;
 }
+
+.key-value-table {
+	border-collapse: collapse;
+}
+
+.key-value-table > tbody > tr > td {
+	border-top: 0;
+	border-bottom: 0;
+}
+
+.key-value-table td:first-child {
+	text-align: right;
+	font-weight: bold;
+	border-right: solid 1pt #ddd;
+}

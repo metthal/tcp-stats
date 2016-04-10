@@ -4,6 +4,7 @@
 	<script type="text/javascript" src="web/bootstrap-3.3.6-dist/js/bootstrap.min.js"></script>
 	<script type="text/javascript" src="web/highcharts.js"></script>
 	<script type="text/javascript" src="web/tcp-stats.js"></script>
+	<script type="text/javascript" src="web/test.json"></script>
 	<link rel="stylesheet" type="text/css" href="web/bootstrap-3.3.6-dist/css/bootstrap.min.css">
 	<link rel="stylesheet" type="text/css" href="web/tcp-stats.css">
 </head>
@@ -13,26 +14,31 @@
 			<a class="navbar-brand" href="#">TCP Stats</a>
 		</div>
 		<ul class="nav navbar-nav">
-			<li class="active"><a href="#">Statistics</a></li>
-			<li><a href="#">About</a></li> 
+			<li id="menu-analyses" class="active"><a href="#">Statistics</a></li>
+			<li id="menu-about"><a href="#">About</a></li> 
 		</ul>
 	</nav>
-	<div class="container">
+	<div id="analysis-container" class="container">
 		<div class="analysis">
 			<div class="analysis-header">
-				Text analysis
+				Key-value analysis
 				<span class="analysis-header-arrow pull-right glyphicon glyphicon-menu-up"></span>
 			</div>
 			<div class="analysis-body">
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut dui lorem, varius sit amet mi ac, commodo commodo diam. Sed nisl ligula, cursus nec tempus ut, rhoncus eget ex. Phasellus porttitor malesuada turpis a imperdiet. In sagittis arcu velit, eu ultrices erat tincidunt non. Ut id congue ligula. Suspendisse ipsum dui, elementum eget nulla vitae, ullamcorper congue quam. Morbi pulvinar ex quis ex feugiat imperdiet. Praesent sollicitudin ac mauris in condimentum. Ut nec volutpat sapien, ac maximus dui. Duis fringilla eros tellus. Nunc nec ex augue. Nulla justo erat, viverra vitae enim porta, egestas pulvinar nunc. Maecenas quis sagittis enim.
-
-Suspendisse gravida vitae sapien et accumsan. In vel dignissim risus. Integer mollis urna facilisis, ornare mauris volutpat, dignissim odio. Integer sed dapibus mi. Phasellus et turpis et purus venenatis tincidunt. Vestibulum maximus eros at arcu volutpat mollis. Sed sed libero tortor. Curabitur vehicula pellentesque erat, nec condimentum justo facilisis ut.
-
-Praesent rhoncus dolor at auctor dictum. Curabitur fringilla enim justo, vitae pretium dui venenatis nec. Mauris tempor felis enim, ac consectetur nibh scelerisque et. Aliquam eget maximus odio. Praesent quis leo id quam pretium dapibus eu sit amet tellus. Mauris in arcu neque. Aliquam odio ex, ornare non mi vel, faucibus imperdiet dolor. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Morbi convallis ex sapien, in finibus ligula vehicula at. Proin tincidunt eros sit amet blandit facilisis. Suspendisse euismod elit non enim volutpat efficitur. Donec hendrerit faucibus pellentesque. Nam efficitur, tortor ac facilisis dignissim, mi elit egestas justo, sed varius nunc mi eget purus. Curabitur dictum enim sit amet egestas cursus. Nullam varius enim et nulla viverra, sed eleifend ex eleifend. Proin enim quam, tincidunt in ex quis, pharetra feugiat sapien.
-
-In efficitur erat ut felis tincidunt, id cursus velit consectetur. Phasellus finibus suscipit tellus, eget cursus eros. Proin nisl velit, viverra at erat id, pulvinar imperdiet mi. Praesent ac massa tellus. Nulla suscipit, libero ac ultricies mattis, turpis nibh tempus elit, sit amet condimentum leo lectus ac dolor. Phasellus dui mauris, vulputate vel tempus nec, euismod volutpat sapien. Morbi ligula nunc, tincidunt eu nunc ac, vehicula ultrices mauris. Curabitur vel ex vel ex semper sagittis vitae at enim. Nulla lacinia eros sed odio cursus varius.
-
-Mauris tincidunt, lacus sed pellentesque convallis, dui ex dictum lorem, vitae consequat nibh mauris vitae mi. Cras pulvinar justo nec tellus lacinia suscipit. Aenean vitae venenatis eros. Nunc molestie iaculis elit non porttitor. Curabitur interdum, tellus et pellentesque rutrum, orci ligula viverra nibh, nec viverra felis felis convallis lacus. Donec libero tellus, posuere in ligula et, blandit ultrices lacus. Fusce malesuada tortor a nunc malesuada ultricies sit amet in magna. Duis placerat urna leo, ut vestibulum urna bibendum eleifend. Cras sit amet suscipit nisi.
+				<table class="table table-striped key-value-table">
+					<tr>
+						<td>Key 1</td>
+						<td>Value 1</td>
+					</tr>
+					<tr>
+						<td>Key 1</td>
+						<td>Value 1</td>
+					</tr>
+					<tr>
+						<td>Key 1</td>
+						<td>Value 1</td>
+					</tr>
+				</table>
 			</div>
 		</div>
 		<div class="analysis">
@@ -102,6 +108,11 @@ $(function () {
 				</script>
 				</div>
 			</div>
+		</div>
+	</div>
+	<div id="about-container" class="container">
+		<div class=".about">
+			<h1>About</h1>
 		</div>
 	</div>
 </body>
