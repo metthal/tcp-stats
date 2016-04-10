@@ -16,16 +16,12 @@ void AnalysisManager::add(std::unique_ptr<StreamAnalysis> analysis)
 	_analyzers.push_back(std::move(analysis));
 }
 
-bool AnalysisManager::runAll(const TcpStream& stream)
+void AnalysisManager::runAll(const TcpStream& stream)
 {
-	/*std::vector outputs;
 	for (auto& analysis : _analyzers)
 	{
-		outputs.push_back(analysis->run(stream));
+		analysis->run(stream);
 	}
-
-	return outputs;*/
-	return false;
 }
 
 void AnalysisManager::visitAll(StreamAnalysisVisitor& visitor)

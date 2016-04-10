@@ -4,6 +4,11 @@ Packet::Packet() : _sourceIp(), _destIp(), _sourcePort(0), _destPort(0)
 {
 }
 
+void Packet::setTimestamp(const Packet::Timestamp& timestamp)
+{
+	_timestamp = timestamp;
+}
+
 void Packet::setSourceIp(const std::string& sourceIp)
 {
 	_sourceIp = sourceIp;
@@ -22,6 +27,11 @@ void Packet::setSourcePort(std::uint16_t sourcePort)
 void Packet::setDestPort(std::uint16_t destPort)
 {
 	_destPort = destPort;
+}
+
+const Packet::Timestamp& Packet::getTimestamp() const
+{
+	return _timestamp;
 }
 
 const std::string Packet::getSourceIp() const

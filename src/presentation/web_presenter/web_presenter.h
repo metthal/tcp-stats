@@ -6,12 +6,17 @@
 class WebPresenter : public StreamAnalysisVisitor
 {
 public:
-	WebPresenter(const std::string& outputFilePath);
+	WebPresenter();
 
-	virtual void visit(const PacketExchangeAnalysis& analysis) override;
+	void present(const std::string& fileName);
+
+	virtual void visit(const OverallInfoAnalysis& analysis) override;
+
+protected:
+	template <typename T> Json::Value buildKeyValue(const std::string& key, const T& value);
 
 private:
-	std::string _outputFilePath;
+	Json::Value _root;
 };
 
 #endif

@@ -106,7 +106,13 @@ public:
 	iterator::value_type operator [](int offset);
 	const_iterator::value_type operator [](int offset) const;
 
-	void add(std::shared_ptr<Packet> packet);
+	bool isEmpty() const;
+	std::size_t getNumberOfPackets() const;
+	void addPacket(std::shared_ptr<Packet> packet);
+
+	Packet::Timestamp getStartTime() const;
+	Packet::Timestamp getEndTime() const;
+	std::chrono::microseconds getDuration() const;
 
 private:
 	std::vector<std::shared_ptr<Packet>> _packets;

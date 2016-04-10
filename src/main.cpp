@@ -27,7 +27,7 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
-	REGISTER_ANALYSIS(PacketExchangeAnalysis);
+	REGISTER_ANALYSIS(OverallInfoAnalysis);
 
 	try
 	{
@@ -36,10 +36,11 @@ int main(int argc, char* argv[])
 		auto pcapParser = PcapngParser(std::move(pcapFile));
 		auto stream = pcapParser.parse();
 
-		auto outputs = AnalysisManager::instance().runAll(*stream.get());
+		AnalysisManager::instance().runAll(*stream.get());
 
-		auto webPresenter = WebPresenter("xmilko01.json");
+		WebPresenter webPresenter;
 		AnalysisManager::instance().visitAll(webPresenter);
+		webPresenter.present("xmilko01.json");
 	}
 	catch (const BaseException& ex)
 	{

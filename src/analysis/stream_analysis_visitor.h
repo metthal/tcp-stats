@@ -6,7 +6,7 @@
 class StreamAnalysisVisitor
 {
 public:
-	virtual void visit(const PacketExchangeAnalysis& analysis) = 0;
+	virtual void visit(const OverallInfoAnalysis& analysis) = 0;
 };
 
 #endif

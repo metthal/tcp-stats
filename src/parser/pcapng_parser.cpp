@@ -6,6 +6,7 @@
 #include <iostream>
 
 #include "parser/pcapng_parser.h"
+#include "utils/conversion.h"
 #include "utils/exceptions.h"
 
 PcapngParser::PcapngParser(std::unique_ptr<PcapngFile> file) : _file(std::move(file))
@@ -21,14 +22,14 @@ std::shared_ptr<TcpStream> PcapngParser::parse()
 
 	while (_file->nextPacket(data, timestamp))
 	{
-		auto packet = parsePacket(data);
-		stream->add(packet);
+		auto packet = parsePacket(data, timestamp);
+		stream->addPacket(packet);
 	}
 
 	return stream;
 }
 
-std::shared_ptr<Packet> PcapngParser::parsePacket(const std::vector<std::uint8_t>& data)
+std::shared_ptr<Packet> PcapngParser::parsePacket(const std::vector<std::uint8_t>& data, const timeval& timestamp)
 {
 	const ether_header* ethernetHeader = reinterpret_cast<const ether_header*>(data.data());
 	if (ntohs(ethernetHeader->ether_type) != ETHERTYPE_IP)
@@ -51,6 +52,7 @@ std::shared_ptr<Packet> PcapngParser::parsePacket(const std::vector<std::uint8_t
 
 	auto packet = std::make_shared<Packet>();
 
+	packet->setTimestamp(timevalToTimestamp(timestamp));
 	packet->setSourceIp(parseIp(ipHeader->saddr));
 	packet->setDestIp(parseIp(ipHeader->daddr));
 	packet->setSourcePort(ntohs(tcpHeader->source));

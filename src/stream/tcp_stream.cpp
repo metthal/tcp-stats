@@ -34,7 +34,38 @@ TcpStream::const_iterator::value_type TcpStream::operator [](int offset) const
 	return _packets[offset].get();
 }
 
-void TcpStream::add(std::shared_ptr<Packet> packet)
+bool TcpStream::isEmpty() const
+{
+	return getNumberOfPackets() == 0;
+}
+
+std::size_t TcpStream::getNumberOfPackets() const
+{
+	return _packets.size();
+}
+
+void TcpStream::addPacket(std::shared_ptr<Packet> packet)
 {
 	_packets.push_back(packet);
+}
+
+Packet::Timestamp TcpStream::getStartTime() const
+{
+	if (_packets.empty())
+		return Packet::Timestamp();
+
+	return _packets.front()->getTimestamp();
+}
+
+Packet::Timestamp TcpStream::getEndTime() const
+{
+	if (_packets.empty())
+		return Packet::Timestamp();
+
+	return _packets.back()->getTimestamp();
+}
+
+std::chrono::microseconds TcpStream::getDuration() const
+{
+	return getEndTime() - getStartTime();
 }
