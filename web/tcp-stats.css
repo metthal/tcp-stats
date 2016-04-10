@@ -1,0 +1,52 @@
+.analysis-header {
+	cursor: pointer;
+	margin-bottom: 10px;
+	padding-top: 10px;
+	padding-left: 15px;
+	padding-right: 20px;
+	padding-bottom: 5px;
+	font-size: 200%;
+	display: block;
+	background: #f1f1f1;
+}
+
+.analysis-body {
+	padding-left: 20px;
+	padding-right: 20px;
+	margin-bottom: 10px;
+}
+
+.analysis-header-arrow {
+	padding-top: 5px;
+	display: inline-block;
+}
+
+.rotate-down {
+	-webkit-transition-duration: 0.25s;
+	-moz-transition-duration: 0.25s;
+	-o-transition-duration: 0.25s;
+	transition-duration: 0.25s;
+	-webkit-transform: rotate(-180deg);
+	-moz-transform: rotate(-180deg);
+	-o-transform: rotate(-180deg);
+	-ms-transform: rotate(-180deg);
+	transform: rotate(-180deg);
+}
+
+.rotate-up {
+	-webkit-transition-duration: 0.25s;
+	-moz-transition-duration: 0.25s;
+	-o-transition-duration: 0.25s;
+	transition-duration: 0.25s;
+	-webkit-transform: rotate(0deg);
+	-moz-transform: rotate(0deg);
+	-o-transform: rotate(0deg);
+	-ms-transform: rotate(0deg);
+	transform: rotate(0deg);
+}
+
+.graph {
+	margin-left: auto;
+	margin-right: auto;
+	display: inline-block;
+}
