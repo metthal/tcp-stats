@@ -11,7 +11,7 @@ void WebPresenter::present(const std::string& fileName)
 {
 	std::ofstream file(fileName, std::ios::trunc);
 	Json::StyledWriter writer;
-	file << writer.write(_root);
+	file << "tcpstats_data = " << writer.write(_root);
 	file.close();
 }
 
