@@ -57,6 +57,14 @@ std::shared_ptr<Packet> PcapngParser::parsePacket(const std::vector<std::uint8_t
 	packet->setDestIp(parseIp(ipHeader->daddr));
 	packet->setSourcePort(ntohs(tcpHeader->source));
 	packet->setDestPort(ntohs(tcpHeader->dest));
+	packet->setSequenceNumber(ntohl(tcpHeader->seq));
+	packet->setAckNumber(ntohl(tcpHeader->ack_seq));
+	packet->setSyn(tcpHeader->syn);
+	packet->setFin(tcpHeader->fin);
+	packet->setAck(tcpHeader->ack);
+	packet->setPush(tcpHeader->psh);
+	packet->setReset(tcpHeader->rst);
+	packet->setUrgent(tcpHeader->urg);
 
 	return packet;
 }
