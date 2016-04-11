@@ -50,8 +50,8 @@ void WebPresenter::visit(const RttAnalysis& analysis)
 	graph["chart"]["type"] = "line";
 	graph["chart"]["zoomType"] = "x";
 	graph["xAxis"]["title"]["text"] = "Packet Number";
-	graph["yAxis"]["title"]["text"] = "RTT [\xC2\xB5s]";
-	graph["tooltip"]["valueSuffix"] = " \xC2\xB5";
+	graph["yAxis"]["title"]["text"] = "RTT [ms]";
+	graph["tooltip"]["valueSuffix"] = " ms";
 
 	Json::Value plotData;
 	for (const auto& rttInfo : output->rtts)
