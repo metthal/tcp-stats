@@ -49,6 +49,9 @@ function displayAnalysisData(metadata, data) {
 		case "key_value":
 			createKeyValueData(data).appendTo(analysisBody);
 			break;
+		case "graph":
+			createGraph(data).appendTo(analysisBody);
+			break;
 	}
 
 	analysis.appendTo("#analysis-container");
@@ -64,6 +67,18 @@ function createKeyValueData(data) {
 	}
 
 	return table;
+}
+
+function createGraph(data) {
+	var container = $("<div></div>").addClass("container");
+	for (i = 0; i < data.length; i++) {
+		var graph = $("<div></div>").addClass("graph");
+		data[i].chart.width = $(".analysis").width();
+		$(graph).highcharts(data[i]);
+		graph.appendTo(container);
+	}
+
+	return container;
 }
 
 function setupAnalysisHandlers() {
