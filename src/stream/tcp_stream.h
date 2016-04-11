@@ -38,12 +38,12 @@ public:
 		value_type operator ->() const { return _pos < static_cast<std::int64_t>(_stream->_packets.size()) ? _stream->_packets[_pos].get() : nullptr; }
 
 		// Can be incremented
-		iterator_impl<value_type, base_type>& operator ++()
+		const iterator_impl<value_type, base_type>& operator ++() const
 		{
 			_pos += _pos >= static_cast<std::int64_t>(_stream->_packets.size()) ? 0 : 1;
 			return *this;
 		}
-		iterator_impl<value_type, base_type> operator ++(int)
+		const iterator_impl<value_type, base_type> operator ++(int) const
 		{
 			iterator_impl<value_type, base_type> tmp(*this);
 			_pos = _pos >= static_cast<std::int64_t>(_stream->_packets.size()) ? 0 : _pos + 1;
@@ -51,12 +51,12 @@ public:
 		}
 
 		// Can be decremented
-		iterator_impl<value_type, base_type>& operator --()
+		const iterator_impl<value_type, base_type>& operator --() const
 		{
 			_pos = _pos == 0 ? 0 : _pos - 1;
 			return *this;
 		}
-		iterator_impl<value_type, base_type> operator --(int)
+		const iterator_impl<value_type, base_type> operator --(int) const
 		{
 			iterator_impl<value_type, base_type> tmp(*this);
 			_pos = _pos == 0 ? 0 : _pos - 1;
@@ -64,13 +64,13 @@ public:
 		}
 
 		// Supports the arithmetic operators + and - between an iterator and an integer value, or subtracting an iterator from another.
-		iterator_impl<value_type, base_type>& operator +(int value)
+		const iterator_impl<value_type, base_type>& operator +(int value) const
 		{
-			_pos = std::max(0, std::min(_stream->_packets.size(), _pos + value));
+			_pos = std::max(0l, std::min(static_cast<std::int64_t>(_stream->_packets.size()), _pos + value));
 			return *this;
 		}
-		iterator_impl<value_type, base_type>& operator -(int value) { return *this + (-value); }
-		iterator_impl<value_type, base_type>& operator -(const iterator_impl<value_type, base_type>& itr) { return *this - itr._pos; }
+		const iterator_impl<value_type, base_type>& operator -(int value) const { return *this + (-value); }
+		const iterator_impl<value_type, base_type>& operator -(const iterator_impl<value_type, base_type>& itr) const { return *this - itr._pos; }
 
 		// Can be compared with inequality relational operators (<, >, <= and >=)
 		bool operator <(const iterator_impl<value_type, base_type>& itr) const { return _pos < itr._pos; }
@@ -79,8 +79,8 @@ public:
 		bool operator >=(const iterator_impl<value_type, base_type>& itr) const { return (*this == itr) || (*this > itr); }
 
 		// Supports compound assignment operations += and -=
-		iterator_impl<value_type, base_type>& operator +=(int value) { return *this + value; }
-		iterator_impl<value_type, base_type>& operator -=(int value) { return *this - value; }
+		const iterator_impl<value_type, base_type>& operator +=(int value) const { return *this + value; }
+		const iterator_impl<value_type, base_type>& operator -=(int value) const { return *this - value; }
 
 		// Supports the offset dereference operator ([])
 		value_type operator [](int offset) const
@@ -90,7 +90,7 @@ public:
 
 	private:
 		base_type _stream;
-		std::int64_t _pos;
+		mutable std::int64_t _pos;
 	};
 
 	using iterator = iterator_impl<Packet*, TcpStream*>;
