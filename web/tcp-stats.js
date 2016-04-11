@@ -73,7 +73,7 @@ function createGraph(data) {
 	var container = $("<div></div>").addClass("container");
 	for (i = 0; i < data.length; i++) {
 		var graph = $("<div></div>").addClass("graph");
-		data[i].chart.width = $(".analysis").width();
+		data[i].chart.width = $("#analysis-container").width() - 50;
 		$(graph).highcharts(data[i]);
 		graph.appendTo(container);
 	}
