@@ -41,9 +41,18 @@ std::string durationToTime(const std::chrono::microseconds& duration)
 std::string snakeCaseString(std::string str)
 {
 	std::size_t pos;
-	while ((pos =  str.find_first_of("ABCDEFGHIJKLMNOPQRSTUVWXYZ ")) != std::string::npos)
+	while ((pos =  str.find_first_of("ABCDEFGHIJKLMNOPQRSTUVWXYZ -")) != std::string::npos)
 	{
-		str[pos] = (str[pos] == ' ') ? '_' : tolower(str[pos]);
+		switch (str[pos])
+		{
+			case ' ':
+			case '-':
+				str[pos] = '_';
+				break;
+			default:
+				str[pos] = tolower(str[pos]);
+				break;
+		}
 	}
 
 	return str;
