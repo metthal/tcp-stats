@@ -35,6 +35,37 @@ void WebPresenter::visit(const OverallInfoAnalysis& analysis)
 	_root["analyses_data"][snakeCaseString(analysis.name())] = data;
 }
 
+void WebPresenter::visit(const RttAnalysis& analysis)
+{
+	Json::Value metadata;
+	metadata["id"] = snakeCaseString(analysis.name());
+	metadata["name"] = analysis.name();
+	metadata["dataType"] = "graph";
+	_root["analyses"].append(metadata);
+
+	const RttOutput* output = static_cast<const RttOutput*>(analysis.output());
+
+	Json::Value graph;
+	graph["title"]["text"] = analysis.name();
+	graph["chart"]["type"] = "line";
+	graph["chart"]["zoomType"] = "x";
+	graph["xAxis"]["title"]["text"] = "Packet Number";
+	graph["yAxis"]["title"]["text"] = "RTT [\xC2\xB5s]";
+	graph["tooltip"]["valueSuffix"] = " \xC2\xB5";
+
+	Json::Value plotData;
+	for (const auto& rttInfo : output->rtts)
+	{
+		// In milliseconds.
+		plotData["data"].append(rttInfo.rtt.count() / 1000.0);
+	}
+	graph["series"].append(plotData);
+
+	Json::Value data;
+	data.append(graph);
+	_root["analyses_data"][snakeCaseString(analysis.name())] = data;
+}
+
 template <typename T> Json::Value WebPresenter::buildKeyValue(const std::string& key, const T& value)
 {
 	Json::Value keyValue;
