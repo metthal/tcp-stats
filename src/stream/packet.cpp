@@ -1,6 +1,6 @@
 #include "stream/packet.h"
 
-Packet::Packet() : _sourceIp(), _destIp(), _sourcePort(0), _destPort(0)
+Packet::Packet() : _sourceIp(), _destIp(), _sourcePort(0), _destPort(0), _seqNumber(0), _ackNumber(0), _tcpFlags(TCP_FLAG_NONE)
 {
 }
 
@@ -29,6 +29,46 @@ void Packet::setDestPort(std::uint16_t destPort)
 	_destPort = destPort;
 }
 
+void Packet::setSequenceNumber(std::uint32_t seqNumber)
+{
+	_seqNumber = seqNumber;
+}
+
+void Packet::setAckNumber(std::uint32_t ackNumber)
+{
+	_ackNumber = ackNumber;
+}
+
+void Packet::setSyn(bool set)
+{
+	_tcpFlags = set ? (_tcpFlags | TCP_FLAG_SYN) : (_tcpFlags & ~TCP_FLAG_SYN);
+}
+
+void Packet::setFin(bool set)
+{
+	_tcpFlags = set ? (_tcpFlags | TCP_FLAG_FIN) : (_tcpFlags & ~TCP_FLAG_FIN);
+}
+
+void Packet::setAck(bool set)
+{
+	_tcpFlags = set ? (_tcpFlags | TCP_FLAG_ACK) : (_tcpFlags & ~TCP_FLAG_ACK);
+}
+
+void Packet::setPush(bool set)
+{
+	_tcpFlags = set ? (_tcpFlags | TCP_FLAG_PUSH) : (_tcpFlags & ~TCP_FLAG_PUSH);
+}
+
+void Packet::setReset(bool set)
+{
+	_tcpFlags = set ? (_tcpFlags | TCP_FLAG_RESET) : (_tcpFlags & ~TCP_FLAG_RESET);
+}
+
+void Packet::setUrgent(bool set)
+{
+	_tcpFlags = set ? (_tcpFlags | TCP_FLAG_URGENT) : (_tcpFlags & ~TCP_FLAG_URGENT);
+}
+
 const Packet::Timestamp& Packet::getTimestamp() const
 {
 	return _timestamp;
@@ -52,4 +92,44 @@ std::uint16_t Packet::getSourcePort() const
 std::uint16_t Packet::getDestPort() const
 {
 	return _destPort;
+}
+
+bool Packet::isSyn() const
+{
+	return _tcpFlags & TCP_FLAG_SYN;
+}
+
+bool Packet::isFin() const
+{
+	return _tcpFlags & TCP_FLAG_FIN;
+}
+
+bool Packet::isAck() const
+{
+	return _tcpFlags & TCP_FLAG_ACK;
+}
+
+bool Packet::isPush() const
+{
+	return _tcpFlags & TCP_FLAG_PUSH;
+}
+
+bool Packet::isReset() const
+{
+	return _tcpFlags & TCP_FLAG_RESET;
+}
+
+bool Packet::isUrgent() const
+{
+	return _tcpFlags & TCP_FLAG_URGENT;
+}
+
+std::uint32_t Packet::getSequenceNumber() const
+{
+	return _seqNumber;
+}
+
+std::uint32_t Packet::getAckNumber() const
+{
+	return _ackNumber;
 }
