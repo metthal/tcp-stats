@@ -48,7 +48,7 @@ std::shared_ptr<Packet> PcapngParser::parsePacket(const std::vector<std::uint8_t
 		throw UnsupportedTransportProtocolException();
 	}
 
-	const tcphdr* tcpHeader = reinterpret_cast<const tcphdr*>(data.data() + sizeof(ether_header) + ipHeader->ihl);
+	const tcphdr* tcpHeader = reinterpret_cast<const tcphdr*>(data.data() + sizeof(ether_header) + ipHeader->ihl * 4);
 
 	auto packet = std::make_shared<Packet>();
 
