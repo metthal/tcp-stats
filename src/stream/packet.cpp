@@ -1,7 +1,12 @@
 #include "stream/packet.h"
 
-Packet::Packet() : _sourceIp(), _destIp(), _sourcePort(0), _destPort(0), _seqNumber(0), _ackNumber(0), _tcpFlags(TCP_FLAG_NONE)
+Packet::Packet() : _size(0), _sourceIp(), _destIp(), _sourcePort(0), _destPort(0), _seqNumber(0), _ackNumber(0), _tcpFlags(TCP_FLAG_NONE)
 {
+}
+
+void Packet::setSize(std::uint64_t size)
+{
+	_size = size;
 }
 
 void Packet::setTimestamp(const Packet::Timestamp& timestamp)
@@ -67,6 +72,11 @@ void Packet::setReset(bool set)
 void Packet::setUrgent(bool set)
 {
 	_tcpFlags = set ? (_tcpFlags | TCP_FLAG_URGENT) : (_tcpFlags & ~TCP_FLAG_URGENT);
+}
+
+std::uint64_t Packet::getSize() const
+{
+	return _size;
 }
 
 const Packet::Timestamp& Packet::getTimestamp() const

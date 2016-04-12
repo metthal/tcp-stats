@@ -23,6 +23,7 @@ public:
 
 	Packet();
 
+	void setSize(std::uint64_t size);
 	void setTimestamp(const Timestamp& timestamp);
 	void setSourceIp(const std::string& sourceIp);
 	void setDestIp(const std::string& destIp);
@@ -37,6 +38,7 @@ public:
 	void setReset(bool set);
 	void setUrgent(bool set);
 
+	std::uint64_t getSize() const;
 	const Timestamp& getTimestamp() const;
 	const std::string getSourceIp() const;
 	const std::string getDestIp() const;
@@ -52,6 +54,7 @@ public:
 	bool isUrgent() const;
 
 private:
+	std::uint64_t _size;
 	Timestamp _timestamp;
 	std::string _sourceIp;
 	std::string _destIp;
