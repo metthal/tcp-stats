@@ -32,6 +32,8 @@ void WebPresenter::visit(const OverallInfoAnalysis& analysis)
 	data.append(buildKeyValue("Connection established on", timestampToDateTime(output->firstPacketTime)));
 	data.append(buildKeyValue("Connection finished on", timestampToDateTime(output->lastPacketTime)));
 	data.append(buildKeyValue("Connection lasted for", durationToTime(output->duration)));
+	data.append(buildKeyValue("Client to server window multiplier", convertToString(1 << output->clientWindowScale)));
+	data.append(buildKeyValue("Server to client window multiplier", convertToString(1 << output->serverWindowScale)));
 	_root["analyses_data"][snakeCaseString(analysis.name())] = data;
 }
 
