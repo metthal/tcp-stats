@@ -52,6 +52,7 @@ std::shared_ptr<Packet> PcapngParser::parsePacket(const std::vector<std::uint8_t
 
 	auto packet = std::make_shared<Packet>();
 
+	packet->setSize(data.size());
 	packet->setTimestamp(timevalToTimestamp(timestamp));
 	packet->setSourceIp(parseIp(ipHeader->saddr));
 	packet->setDestIp(parseIp(ipHeader->daddr));
