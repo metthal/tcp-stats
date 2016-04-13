@@ -2,6 +2,9 @@ function initDataDisplay() {
 	if (typeof(tcpstats_data) !== 'undefined') {
 		$("#no-analysis-found").remove();
 	}
+	else {
+		$("#loading-data").remove();
+	}
 }
 
 function initMenuActions() {
@@ -104,12 +107,19 @@ function setupAnalysisHandlers() {
 	});
 }
 
+function postLoadingSetup() {
+	displayAnalysesData();
+	setupAnalysisHandlers();
+	$("#loading-data").remove();
+	$(".analysis").each(function(index, analysis) {
+		$(analysis).stop(true, true).animate({ height: "toggle", opacity: "toggle" }, 400);
+	});
+}
+
 $(function() {
 	initDataDisplay();
 	initMenuActions();
 	initAbout();
 
-	displayAnalysesData();
-
-	setupAnalysisHandlers();
+	setTimeout(postLoadingSetup, 1000);
 });

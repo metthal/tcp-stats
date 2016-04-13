@@ -1,3 +1,7 @@
+.analysis {
+	display: none;
+}
+
 .analysis-header {
 	cursor: pointer;
 	margin-bottom: 10px;
@@ -44,6 +48,34 @@
 	-o-transform: rotate(0deg);
 	-ms-transform: rotate(0deg);
 	transform: rotate(0deg);
+}
+
+.loop-forever {
+	-webkit-transform-origin: 50% 47%;
+	-moz-transform-origin: 50% 44%;
+	-ms-transform-origin: 50% 47%;
+	transform-origin: 50% 47%;
+	-webkit-animation: spin 1s infinite linear;
+	-moz-animation: spin 1s infinite linear;
+	-o-animation: spin 1s infinite linear;
+	animation: spin 1s infinite linear;
+}
+
+@-moz-keyframes spin {
+	from { -moz-transform: rotate(0deg); }
+	to { -moz-transform: rotate(360deg); }
+}
+@-webkit-keyframes spin {
+	from { -webkit-transform: rotate(0deg); }
+	to { -webkit-transform: rotate(360deg); }
+}
+@-o-keyframes spin {
+	from { -o-transform: rotate(0deg); }
+	to { -o-transform: rotate(360deg); }
+}
+@keyframes spin {
+	from { -webkit-transform: rotate(0deg); transform: rotate(0deg); }
+	to { -webkit-transform: rotate(360deg); transform: rotate(360deg); }
 }
 
 .graph {
