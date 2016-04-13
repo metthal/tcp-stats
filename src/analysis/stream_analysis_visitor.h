@@ -8,6 +8,7 @@ class StreamAnalysisVisitor
 public:
 	virtual void visit(const OverallInfoAnalysis& analysis) = 0;
 	virtual void visit(const RttAnalysis& analysis) = 0;
+	virtual void visit(const SpeedAnalysis& analysis) = 0;
 };
 
 #endif

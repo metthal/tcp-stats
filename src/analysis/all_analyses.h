@@ -3,5 +3,6 @@
 
 #include "analysis/overall_info_analysis/overall_info_analysis.h"
 #include "analysis/rtt_analysis/rtt_analysis.h"
+#include "analysis/speed_analysis/speed_analysis.h"
 
 #endif
