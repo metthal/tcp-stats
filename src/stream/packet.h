@@ -31,6 +31,8 @@ public:
 	void setDestPort(std::uint16_t destPort);
 	void setSequenceNumber(std::uint32_t seqNumber);
 	void setAckNumber(std::uint32_t ackNumber);
+	void setWindowSize(std::uint16_t windowSize);
+	void setWindowScale(std::uint8_t windowScale);
 	void setSyn(bool set);
 	void setFin(bool set);
 	void setAck(bool set);
@@ -46,6 +48,8 @@ public:
 	std::uint16_t getDestPort() const;
 	std::uint32_t getSequenceNumber() const;
 	std::uint32_t getAckNumber() const;
+	std::uint16_t getWindowSize() const;
+	std::uint8_t getWindowScale() const;
 	bool isSyn() const;
 	bool isFin() const;
 	bool isAck() const;
@@ -62,6 +66,8 @@ private:
 	std::uint16_t _destPort;
 	std::uint32_t _seqNumber;
 	std::uint32_t _ackNumber;
+	std::uint16_t _windowSize;
+	std::uint8_t _windowScale;
 	std::uint8_t _tcpFlags;
 };
 

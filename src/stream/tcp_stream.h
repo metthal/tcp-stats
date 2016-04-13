@@ -106,16 +106,29 @@ public:
 	iterator::value_type operator [](int offset);
 	const_iterator::value_type operator [](int offset) const;
 
+	void addPacket(std::shared_ptr<Packet> packet);
+
+	void setClientWindowScale(std::uint8_t clientWindowScale);
+	void setServerWindowScale(std::uint8_t serverWindowScale);
+
 	bool isEmpty() const;
 	std::size_t getNumberOfPackets() const;
-	void addPacket(std::shared_ptr<Packet> packet);
 
 	Packet::Timestamp getStartTime() const;
 	Packet::Timestamp getEndTime() const;
+	std::uint8_t getClientWindowScale() const;
+	std::uint8_t getServerWindowScale() const;
 	std::chrono::microseconds getDuration() const;
+
+	std::string getClientIp() const;
+	std::string getServerIp() const;
+	std::uint32_t getWindowSize(std::uint64_t packetIndex) const;
+	std::uint32_t getWindowSize(const Packet* packet) const;
 
 private:
 	std::vector<std::shared_ptr<Packet>> _packets;
+	std::uint8_t _clientWindowScale;
+	std::uint8_t _serverWindowScale;
 };
 
 #endif

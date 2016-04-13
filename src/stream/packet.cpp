@@ -1,6 +1,7 @@
 #include "stream/packet.h"
 
-Packet::Packet() : _size(0), _sourceIp(), _destIp(), _sourcePort(0), _destPort(0), _seqNumber(0), _ackNumber(0), _tcpFlags(TCP_FLAG_NONE)
+Packet::Packet() : _size(0), _sourceIp(), _destIp(), _sourcePort(0), _destPort(0), _seqNumber(0), _ackNumber(0),
+	_windowSize(0), _windowScale(0), _tcpFlags(TCP_FLAG_NONE)
 {
 }
 
@@ -42,6 +43,16 @@ void Packet::setSequenceNumber(std::uint32_t seqNumber)
 void Packet::setAckNumber(std::uint32_t ackNumber)
 {
 	_ackNumber = ackNumber;
+}
+
+void Packet::setWindowSize(std::uint16_t windowSize)
+{
+	_windowSize = windowSize;
+}
+
+void Packet::setWindowScale(std::uint8_t windowScale)
+{
+	_windowScale = windowScale;
 }
 
 void Packet::setSyn(bool set)
@@ -102,6 +113,16 @@ std::uint16_t Packet::getSourcePort() const
 std::uint16_t Packet::getDestPort() const
 {
 	return _destPort;
+}
+
+std::uint16_t Packet::getWindowSize() const
+{
+	return _windowSize;
+}
+
+std::uint8_t Packet::getWindowScale() const
+{
+	return _windowScale;
 }
 
 bool Packet::isSyn() const

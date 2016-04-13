@@ -34,6 +34,21 @@ TcpStream::const_iterator::value_type TcpStream::operator [](int offset) const
 	return _packets[offset].get();
 }
 
+void TcpStream::addPacket(std::shared_ptr<Packet> packet)
+{
+	_packets.push_back(packet);
+}
+
+void TcpStream::setClientWindowScale(std::uint8_t clientWindowScale)
+{
+	_clientWindowScale = clientWindowScale;
+}
+
+void TcpStream::setServerWindowScale(std::uint8_t serverWindowScale)
+{
+	_serverWindowScale = serverWindowScale;
+}
+
 bool TcpStream::isEmpty() const
 {
 	return getNumberOfPackets() == 0;
@@ -42,11 +57,6 @@ bool TcpStream::isEmpty() const
 std::size_t TcpStream::getNumberOfPackets() const
 {
 	return _packets.size();
-}
-
-void TcpStream::addPacket(std::shared_ptr<Packet> packet)
-{
-	_packets.push_back(packet);
 }
 
 Packet::Timestamp TcpStream::getStartTime() const
@@ -65,7 +75,51 @@ Packet::Timestamp TcpStream::getEndTime() const
 	return _packets.back()->getTimestamp();
 }
 
+std::uint8_t TcpStream::getClientWindowScale() const
+{
+	return _clientWindowScale;
+}
+
+std::uint8_t TcpStream::getServerWindowScale() const
+{
+	return _serverWindowScale;
+}
+
 std::chrono::microseconds TcpStream::getDuration() const
 {
 	return getEndTime() - getStartTime();
+}
+
+std::string TcpStream::getClientIp() const
+{
+	if (getNumberOfPackets() < 2)
+		return "";
+
+	return (*this)[0]->getSourceIp();
+}
+
+std::string TcpStream::getServerIp() const
+{
+	if (getNumberOfPackets() < 2)
+		return "";
+
+	return (*this)[1]->getSourceIp();
+}
+
+std::uint32_t TcpStream::getWindowSize(std::uint64_t packetIndex) const
+{
+	return getWindowSize((*this)[packetIndex]);
+}
+
+std::uint32_t TcpStream::getWindowSize(const Packet* packet) const
+{
+	if (packet == nullptr)
+		return 0;
+
+	if (packet->getSourceIp() == getClientIp())
+		return packet->getWindowSize() << getClientWindowScale();
+	else if (packet->getSourceIp() == getServerIp())
+		return packet->getWindowSize() << getServerWindowScale();
+
+	return 0;
 }
