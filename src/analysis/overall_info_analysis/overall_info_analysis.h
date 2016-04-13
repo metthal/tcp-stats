@@ -16,6 +16,8 @@ public:
 	Packet::Timestamp lastPacketTime;
 	std::chrono::microseconds duration;
 	std::uint64_t numberOfPackets;
+	std::uint8_t clientWindowScale;
+	std::uint8_t serverWindowScale;
 };
 
 class OverallInfoAnalysis : public StreamAnalysis

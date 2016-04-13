@@ -9,12 +9,14 @@ void OverallInfoAnalysis::accept(StreamAnalysisVisitor& visitor)
 void OverallInfoAnalysis::run(const TcpStream& stream)
 {
 	auto output = std::make_unique<OverallInfoOutput>();
-	output->clientIp = stream.isEmpty() ? "" : stream[0]->getSourceIp();
-	output->serverIp = stream.isEmpty() ? "" : stream[0]->getDestIp();
+	output->clientIp = stream.getClientIp();
+	output->serverIp = stream.getServerIp();
 	output->numberOfPackets = stream.getNumberOfPackets();
 	output->firstPacketTime = stream.getStartTime();
 	output->lastPacketTime = stream.getEndTime();
 	output->duration = stream.getDuration();
+	output->clientWindowScale = stream.getClientWindowScale();
+	output->serverWindowScale = stream.getServerWindowScale();
 
 	_output = std::move(output);
 }
