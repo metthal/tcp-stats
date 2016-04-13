@@ -66,4 +66,20 @@ public:
 	{}
 };
 
+class NotEnoughPacketsException : public BaseException
+{
+public:
+	NotEnoughPacketsException() :
+		BaseException("Not enough packets in the stream.")
+	{}
+};
+
+class InvalidHandshakeException : public BaseException
+{
+public:
+	InvalidHandshakeException() :
+		BaseException("Invalid TCP handshake found.")
+	{}
+};
+
 #endif
