@@ -16,6 +16,7 @@ public:
 
 private:
 	std::shared_ptr<Packet> parsePacket(const std::vector<std::uint8_t>& data, const timeval& timestamp);
+	void parseTcpOptions(const std::vector<std::uint8_t>& data, std::shared_ptr<Packet>& packet);
 	std::string parseIp(std::uint32_t addr);
 
 	std::unique_ptr<PcapngFile> _file;

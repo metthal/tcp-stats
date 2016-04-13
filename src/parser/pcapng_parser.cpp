@@ -26,6 +26,21 @@ std::shared_ptr<TcpStream> PcapngParser::parse()
 		stream->addPacket(packet);
 	}
 
+	if (stream->getNumberOfPackets() < 2)
+		throw NotEnoughPacketsException();
+
+	auto synPkt = stream->operator[](0);
+	auto synAckPkt = stream->operator[](1);
+
+	if (!synPkt->isSyn() || synPkt->isAck())
+		throw InvalidHandshakeException();
+
+	if (!synAckPkt->isSyn() || !synAckPkt->isAck())
+		throw InvalidHandshakeException();
+
+	stream->setClientWindowScale(synPkt->getWindowScale());
+	stream->setServerWindowScale(synAckPkt->getWindowScale());
+
 	return stream;
 }
 
@@ -60,6 +75,7 @@ std::shared_ptr<Packet> PcapngParser::parsePacket(const std::vector<std::uint8_t
 	packet->setDestPort(ntohs(tcpHeader->dest));
 	packet->setSequenceNumber(ntohl(tcpHeader->seq));
 	packet->setAckNumber(ntohl(tcpHeader->ack_seq));
+	packet->setWindowSize(ntohs(tcpHeader->window));
 	packet->setSyn(tcpHeader->syn);
 	packet->setFin(tcpHeader->fin);
 	packet->setAck(tcpHeader->ack);
@@ -67,7 +83,42 @@ std::shared_ptr<Packet> PcapngParser::parsePacket(const std::vector<std::uint8_t
 	packet->setReset(tcpHeader->rst);
 	packet->setUrgent(tcpHeader->urg);
 
+	std::vector<std::uint8_t> opts;
+	std::copy(data.data() + sizeof(ether_header) + ipHeader->ihl * 4 + sizeof(tcphdr),
+			data.data() + sizeof(ether_header) + ipHeader->ihl * 4 + tcpHeader->doff * 4,
+			std::back_inserter(opts));
+
+	parseTcpOptions(opts, packet);
+
 	return packet;
+}
+
+void PcapngParser::parseTcpOptions(const std::vector<std::uint8_t>& data, std::shared_ptr<Packet>& packet)
+{
+	if (data.size() < 3)
+		return;
+
+	std::uint8_t option = data[0];
+	std::uint8_t size = data[1];
+	if ((option == TCPOPT_EOL) || (data.size() < size))
+		return;
+
+	std::vector<std::uint8_t> newData;
+	switch (option)
+	{
+		case TCPOPT_NOP:
+			newData.assign(data.begin() + 1, data.end());
+			break;
+		case TCPOPT_WINDOW:
+			packet->setWindowScale(data[2]);
+			newData.assign(data.begin() + size, data.end());
+			break;
+		default:
+			newData.assign(data.begin() + size, data.end());
+			break;
+	}
+
+	parseTcpOptions(newData, packet);
 }
 
 std::string PcapngParser::parseIp(std::uint32_t addr)
