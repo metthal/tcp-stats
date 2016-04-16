@@ -1,6 +1,4 @@
-#include <cassert>
-#include <unordered_map>
-#include <utility>
+#include <algorithm>
 
 #include "analysis/rtt_analysis/rtt_analysis.h"
 #include "analysis/stream_analysis_visitor.h"
@@ -12,46 +10,57 @@ void RttAnalysis::accept(StreamAnalysisVisitor& visitor)
 
 void RttAnalysis::run(const TcpStream& stream)
 {
-	using SeqAckTable = std::unordered_map<std::uint32_t, std::pair<const Packet*, bool>>;
-
 	auto output = std::make_unique<RttOutput>();
 
-	SeqAckTable seqAckTable;
-	seqAckTable[stream[0]->getSequenceNumber() + 1] = std::make_pair(stream[0], false);
-	seqAckTable[stream[1]->getSequenceNumber() + 1] = std::make_pair(stream[1], false);
+	SeqAckBuffer clientBuffer, serverBuffer;
 
-	RttInfo irttInfo;
-	irttInfo.message = stream[0];
-	irttInfo.ack = stream[1];
-	irttInfo.rtt = irttInfo.ack->getTimestamp() - irttInfo.message->getTimestamp();
-	output->rtts.push_back(irttInfo);
-
-	for (auto itr = stream.begin() + 2; itr != stream.end(); ++itr)
+	for (const auto& packet : stream)
 	{
-		const Packet* packet = *itr;
+		std::map<std::chrono::microseconds, std::chrono::microseconds>* rttTable = nullptr;
+		SeqAckBuffer* sendBuffer = nullptr;
+		SeqAckBuffer* ackBuffer = nullptr;
+		if (packet->getSourceIp() == stream.getClientIp())
+		{
+			sendBuffer = &clientBuffer;
+			ackBuffer = &serverBuffer;
+			rttTable = &output->serverRtt;
+		}
+		else
+		{
+			sendBuffer = &serverBuffer;
+			ackBuffer = &clientBuffer;
+			rttTable = &output->clientRtt;
+		}
+
+		sendBuffer->push_back(packet);
 
 		if (packet->isAck())
 		{
-			SeqAckTable::const_iterator seqItr = seqAckTable.find(packet->getAckNumber());
-			if (seqItr != seqAckTable.end())
-			{
-				// If not acknowledged already.
-				if (!seqItr->second.second)
-				{
-					RttInfo rttInfo;
-					rttInfo.message = seqItr->second.first;
-					rttInfo.ack = packet;
-					rttInfo.rtt = rttInfo.ack->getTimestamp() - rttInfo.message->getTimestamp();
-					output->rtts.push_back(rttInfo);
+			SeqAckBuffer ackedPackets = ackPackets(packet, *ackBuffer);
+			if (ackedPackets.empty())
+				continue;
 
-					// Acknowledge.
-					seqAckTable[seqItr->first] = std::make_pair(seqItr->second.first, true);
-				}
+			for (const auto& ackedPacket : ackedPackets)
+			{
+				(*rttTable)[stream.getRelativePacketTime(packet)] = packet->getTimestamp() - ackedPacket->getTimestamp();
 			}
 		}
-
-		seqAckTable[packet->getSequenceNumber()] = std::make_pair(packet, false);
+		else
+			std::cout << std::endl;
 	}
 
 	_output = std::move(output);
+}
+
+RttAnalysis::SeqAckBuffer RttAnalysis::ackPackets(const Packet* ack, SeqAckBuffer& ackBuffer)
+{
+	auto itr = std::lower_bound(ackBuffer.begin(), ackBuffer.end(), ack,
+			[](const Packet* seq, const Packet* ack)
+			{
+				return seq->getSequenceNumber() <= ack->getAckNumber();
+			});
+
+	SeqAckBuffer ret(ackBuffer.begin(), itr);
+	ackBuffer.assign(itr, ackBuffer.end());
+	return ret;
 }

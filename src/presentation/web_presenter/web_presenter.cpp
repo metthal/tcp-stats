@@ -47,24 +47,43 @@ void WebPresenter::visit(const RttAnalysis& analysis)
 
 	const RttOutput* output = static_cast<const RttOutput*>(analysis.output());
 
-	Json::Value graph;
-	graph["title"]["text"] = analysis.name();
-	graph["chart"]["type"] = "line";
-	graph["chart"]["zoomType"] = "x";
-	graph["xAxis"]["title"]["text"] = "Packet Number";
-	graph["yAxis"]["title"]["text"] = "RTT [ms]";
-	graph["tooltip"]["valueSuffix"] = " ms";
-
-	Json::Value plotData;
-	for (const auto& rttInfo : output->rtts)
+	Json::Value clientGraph;
+	clientGraph["title"]["text"] = "Client " + analysis.name();
+	clientGraph["chart"]["type"] = "line";
+	clientGraph["chart"]["zoomType"] = "x";
+	clientGraph["xAxis"]["title"]["text"] = "Relative Packet Time [ms]";
+	clientGraph["yAxis"]["title"]["text"] = "RTT [ms]";
+	clientGraph["tooltip"]["valueSuffix"] = " ms";
+	Json::Value clientPlotData;
+	for (const auto& seqRtt : output->clientRtt)
 	{
-		// In milliseconds.
-		plotData["data"].append(rttInfo.rtt.count() / 1000.0);
+		Json::Value point;
+		point.append(seqRtt.first.count() / 1000.0);
+		point.append(seqRtt.second.count() / 1000.0); // In milliseconds.
+		clientPlotData["data"].append(point);
 	}
-	graph["series"].append(plotData);
+	clientGraph["series"].append(clientPlotData);
+
+	Json::Value serverGraph;
+	serverGraph["title"]["text"] = "Server " + analysis.name();
+	serverGraph["chart"]["type"] = "line";
+	serverGraph["chart"]["zoomType"] = "x";
+	serverGraph["xAxis"]["title"]["text"] = "Relative Packet Time [ms]";
+	serverGraph["yAxis"]["title"]["text"] = "RTT [ms]";
+	serverGraph["tooltip"]["valueSuffix"] = " ms";
+	Json::Value serverPlotData;
+	for (const auto& seqRtt : output->serverRtt)
+	{
+		Json::Value point;
+		point.append(seqRtt.first.count() / 1000.0);
+		point.append(seqRtt.second.count() / 1000.0); // In milliseconds.
+		serverPlotData["data"].append(point);
+	}
+	serverGraph["series"].append(serverPlotData);
 
 	Json::Value data;
-	data.append(graph);
+	data.append(clientGraph);
+	data.append(serverGraph);
 	_root["analyses_data"][snakeCaseString(analysis.name())] = data;
 }
 

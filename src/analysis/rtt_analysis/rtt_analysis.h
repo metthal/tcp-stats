@@ -3,12 +3,7 @@
 
 #include "analysis/stream_analysis.h"
 
-struct RttInfo
-{
-	std::chrono::microseconds rtt;
-	const Packet* message;
-	const Packet* ack;
-};
+#include <map>
 
 struct RttOutput : public AnalysisOutput
 {
@@ -16,11 +11,14 @@ struct RttOutput : public AnalysisOutput
 	RttOutput(const RttOutput& output) = default;
 	virtual ~RttOutput() = default;
 
-	std::vector<RttInfo> rtts;
+	std::map<std::chrono::microseconds, std::chrono::microseconds> clientRtt;
+	std::map<std::chrono::microseconds, std::chrono::microseconds> serverRtt;
 };
 
 class RttAnalysis : public StreamAnalysis
 {
+	using SeqAckBuffer = std::vector<const Packet*>;
+
 public:
 	RttAnalysis() = default;
 	virtual ~RttAnalysis() = default;
@@ -29,6 +27,9 @@ public:
 
 	virtual std::string name() const override { return "Round-Trip Time"; }
 	virtual void run(const TcpStream& stream) override;
+
+protected:
+	SeqAckBuffer ackPackets(const Packet* ack, SeqAckBuffer& ackBuffer);
 };
 
 #endif
