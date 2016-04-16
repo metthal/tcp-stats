@@ -123,3 +123,49 @@ std::uint32_t TcpStream::getWindowSize(const Packet* packet) const
 
 	return 0;
 }
+
+std::uint32_t TcpStream::getRelativeSequenceNumber(std::uint64_t packetIndex) const
+{
+	return getRelativeSequenceNumber((*this)[packetIndex]);
+}
+
+std::uint32_t TcpStream::getRelativeSequenceNumber(const Packet* packet) const
+{
+	if (packet == nullptr)
+		return std::numeric_limits<std::uint32_t>::max();
+
+	if (packet->getSourceIp() == getClientIp())
+		return packet->getSequenceNumber() - (*this)[0]->getSequenceNumber();
+	else if (packet->getSourceIp() == getServerIp())
+		return packet->getSequenceNumber() - (*this)[1]->getSequenceNumber();
+	else
+		return std::numeric_limits<std::uint32_t>::max();
+}
+
+std::uint32_t TcpStream::getRelativeAckNumber(std::uint64_t packetIndex) const
+{
+	return getRelativeAckNumber((*this)[packetIndex]);
+}
+
+std::uint32_t TcpStream::getRelativeAckNumber(const Packet* packet) const
+{
+	if (packet == nullptr)
+		return std::numeric_limits<std::uint32_t>::max();
+
+	if (packet->getSourceIp() == getClientIp())
+		return packet->getAckNumber() - (*this)[1]->getSequenceNumber();
+	else if (packet->getSourceIp() == getServerIp())
+		return packet->getAckNumber() - (*this)[0]->getSequenceNumber();
+	else
+		return std::numeric_limits<std::uint32_t>::max();
+}
+
+std::chrono::microseconds TcpStream::getRelativePacketTime(std::uint64_t packetIndex) const
+{
+	return getRelativePacketTime((*this)[packetIndex]);
+}
+
+std::chrono::microseconds TcpStream::getRelativePacketTime(const Packet* packet) const
+{
+	return packet->getTimestamp() - getStartTime();
+}

@@ -124,6 +124,12 @@ public:
 	std::string getServerIp() const;
 	std::uint32_t getWindowSize(std::uint64_t packetIndex) const;
 	std::uint32_t getWindowSize(const Packet* packet) const;
+	std::uint32_t getRelativeSequenceNumber(std::uint64_t packetIndex) const;
+	std::uint32_t getRelativeSequenceNumber(const Packet* packet) const;
+	std::uint32_t getRelativeAckNumber(std::uint64_t packetIndex) const;
+	std::uint32_t getRelativeAckNumber(const Packet* packet) const;
+	std::chrono::microseconds getRelativePacketTime(std::uint64_t packetIndex) const;
+	std::chrono::microseconds getRelativePacketTime(const Packet* packet) const;
 
 private:
 	std::vector<std::shared_ptr<Packet>> _packets;
