@@ -45,8 +45,6 @@ void RttAnalysis::run(const TcpStream& stream)
 				(*rttTable)[stream.getRelativePacketTime(packet)] = packet->getTimestamp() - ackedPacket->getTimestamp();
 			}
 		}
-		else
-			std::cout << std::endl;
 	}
 
 	_output = std::move(output);
