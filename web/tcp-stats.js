@@ -1,3 +1,10 @@
+function initColors() {
+	Highcharts.setOptions({
+		colors :
+			['#55abf2', '#f25757']
+	});
+}
+
 function initDataDisplay() {
 	if (typeof(tcpstats_data) !== 'undefined') {
 		$("#no-analysis-found").remove();
@@ -117,6 +124,7 @@ function postLoadingSetup() {
 }
 
 $(function() {
+	initColors();
 	initDataDisplay();
 	initMenuActions();
 	initAbout();
