@@ -60,7 +60,7 @@ void WebPresenter::visit(const RttAnalysis& analysis)
 	for (const auto& seqRtt : output->clientRtt)
 	{
 		Json::Value point;
-		point.append(seqRtt.first.count() / 1000.0);
+		point.append(seqRtt.first.count() / 1000.0); // In milliseconds.
 		point.append(seqRtt.second.count() / 1000.0); // In milliseconds.
 		clientPlotData["data"].append(point);
 	}
@@ -70,7 +70,7 @@ void WebPresenter::visit(const RttAnalysis& analysis)
 	for (const auto& seqRtt : output->serverRtt)
 	{
 		Json::Value point;
-		point.append(seqRtt.first.count() / 1000.0);
+		point.append(seqRtt.first.count() / 1000.0); // In milliseconds.
 		point.append(seqRtt.second.count() / 1000.0); // In milliseconds.
 		serverPlotData["data"].append(point);
 	}
@@ -93,24 +93,110 @@ void WebPresenter::visit(const SpeedAnalysis& analysis)
 
 	const SpeedOutput* output = static_cast<const SpeedOutput*>(analysis.output());
 
+	Json::Value clientToServerGraph;
+	clientToServerGraph["title"]["text"] = "Client to Server " + analysis.name();
+	clientToServerGraph["chart"]["type"] = "line";
+	clientToServerGraph["chart"]["zoomType"] = "x";
+	clientToServerGraph["xAxis"]["title"]["text"] = "Time [ms]";
+	clientToServerGraph["yAxis"]["title"]["text"] = "Speed [kB/s]";
+	clientToServerGraph["tooltip"]["headerFormat"] = "";
+	clientToServerGraph["tooltip"]["pointFormat"] = "<span>{point.x} ms: <b>{point.y}</b></span>";
+	clientToServerGraph["tooltip"]["valueSuffix"] = " kB/s";
+	clientToServerGraph["tooltip"]["valueDecimals"] = 2;
+	Json::Value clientPlotData, clientPlotAvgData;
+	clientPlotData["name"] = "Immediate";
+	for (const auto& timeSpeed : output->clientToServerSpeed)
+	{
+		Json::Value point;
+		point.append(timeSpeed.first.count() / 1000.0); // In milliseconds.
+		point.append(timeSpeed.second / 1024.0); // In kilobytes.
+		clientPlotData["data"].append(point);
+	}
+	clientPlotAvgData["name"] = "Average";
+	for (const auto& timeSpeed : output->clientToServerAvgSpeed)
+	{
+		Json::Value point;
+		point.append(timeSpeed.first.count() / 1000.0); // In milliseconds.
+		point.append(timeSpeed.second / 1024.0); // In kilobytes.
+		clientPlotAvgData["data"].append(point);
+	}
+	clientToServerGraph["series"].append(clientPlotData);
+	clientToServerGraph["series"].append(clientPlotAvgData);
+
+	Json::Value serverToClientGraph;
+	serverToClientGraph["title"]["text"] = "Server to Client " + analysis.name();
+	serverToClientGraph["chart"]["type"] = "line";
+	serverToClientGraph["chart"]["zoomType"] = "x";
+	serverToClientGraph["xAxis"]["title"]["text"] = "Time [ms]";
+	serverToClientGraph["yAxis"]["title"]["text"] = "Speed [kB/s]";
+	serverToClientGraph["tooltip"]["headerFormat"] = "";
+	serverToClientGraph["tooltip"]["pointFormat"] = "<span>{point.x} ms: <b>{point.y}</b></span>";
+	serverToClientGraph["tooltip"]["valueSuffix"] = " kB/s";
+	serverToClientGraph["tooltip"]["valueDecimals"] = 2;
+	Json::Value serverPlotData, serverPlotAvgData;
+	serverPlotData["name"] = "Immediate";
+	for (const auto& timeSpeed : output->serverToClientSpeed)
+	{
+		Json::Value point;
+		point.append(timeSpeed.first.count() / 1000.0); // In milliseconds.
+		point.append(timeSpeed.second / 1024.0); // In kilobytes.
+		serverPlotData["data"].append(point);
+	}
+	serverPlotAvgData["name"] = "Average";
+	for (const auto& timeSpeed : output->serverToClientAvgSpeed)
+	{
+		Json::Value point;
+		point.append(timeSpeed.first.count() / 1000.0); // In milliseconds.
+		point.append(timeSpeed.second / 1024.0); // In kilobytes.
+		serverPlotAvgData["data"].append(point);
+	}
+	serverToClientGraph["series"].append(serverPlotData);
+	serverToClientGraph["series"].append(serverPlotAvgData);
+
+	Json::Value data;
+	data.append(clientToServerGraph);
+	data.append(serverToClientGraph);
+	_root["analyses_data"][snakeCaseString(analysis.name())] = data;
+}
+
+void WebPresenter::visit(const WindowSizeAnalysis& analysis)
+{
+	Json::Value metadata;
+	metadata["id"] = snakeCaseString(analysis.name());
+	metadata["name"] = analysis.name();
+	metadata["dataType"] = "graph";
+	_root["analyses"].append(metadata);
+
+	const WindowSizeOutput* output = static_cast<const WindowSizeOutput*>(analysis.output());
+
 	Json::Value graph;
 	graph["title"]["text"] = analysis.name();
 	graph["chart"]["type"] = "line";
-	graph["xAxis"]["title"]["text"] = "Time [s]";
-	graph["yAxis"]["title"]["text"] = "Speed [kB/s]";
+	graph["chart"]["zoomType"] = "x";
+	graph["xAxis"]["title"]["text"] = "Time [ms]";
+	graph["yAxis"]["title"]["text"] = "Window Size";
 	graph["tooltip"]["headerFormat"] = "";
-	graph["tooltip"]["pointFormat"] = "<span>{point.x}s: <b>{point.y}</b></span>";
-	graph["tooltip"]["valueSuffix"] = " kB/s";
-	graph["tooltip"]["valueDecimals"] = 2;
-	graph["legend"]["enabled"] = false;
-
-	Json::Value plotData;
-	for (const auto& speed : output->speedInTime)
+	Json::Value clientPlotData;
+	clientPlotData["name"] = "Client";
+	for (const auto& timeWindowSize : output->clientWindowSize)
 	{
-		// In kilobytes.
-		plotData["data"].append(speed / 1024.0);
+		Json::Value point;
+		point.append(timeWindowSize.first.count() / 1000.0); // In milliseconds.
+		point.append(timeWindowSize.second);
+		clientPlotData["data"].append(point);
 	}
-	graph["series"].append(plotData);
+	Json::Value serverPlotData;
+	serverPlotData["name"] = "Server";
+	for (const auto& timeWindowSize : output->serverWindowSize)
+	{
+		Json::Value point;
+		point.append(timeWindowSize.first.count() / 1000.0); // In milliseconds.
+		point.append(timeWindowSize.second);
+		serverPlotData["data"].append(point);
+	}
+
+	graph["series"].append(clientPlotData);
+	graph["series"].append(serverPlotData);
 
 	Json::Value data;
 	data.append(graph);

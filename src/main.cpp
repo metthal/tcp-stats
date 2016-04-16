@@ -30,6 +30,7 @@ int main(int argc, char* argv[])
 	REGISTER_ANALYSIS(OverallInfoAnalysis);
 	REGISTER_ANALYSIS(RttAnalysis);
 	REGISTER_ANALYSIS(SpeedAnalysis);
+	REGISTER_ANALYSIS(WindowSizeAnalysis);
 
 	try
 	{

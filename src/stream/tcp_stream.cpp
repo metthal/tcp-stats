@@ -116,6 +116,9 @@ std::uint32_t TcpStream::getWindowSize(const Packet* packet) const
 	if (packet == nullptr)
 		return 0;
 
+	if (packet->isSyn())
+		return packet->getWindowSize();
+
 	if (packet->getSourceIp() == getClientIp())
 		return packet->getWindowSize() << getClientWindowScale();
 	else if (packet->getSourceIp() == getServerIp())

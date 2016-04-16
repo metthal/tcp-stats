@@ -13,6 +13,7 @@ public:
 	virtual void visit(const OverallInfoAnalysis& analysis) override;
 	virtual void visit(const RttAnalysis& analysis) override;
 	virtual void visit(const SpeedAnalysis& analysis) override;
+	virtual void visit(const WindowSizeAnalysis& analysis) override;
 
 protected:
 	template <typename T> Json::Value buildKeyValue(const std::string& key, const T& value);
