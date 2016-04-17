@@ -14,6 +14,7 @@ public:
 	virtual void visit(const RttAnalysis& analysis) override;
 	virtual void visit(const SpeedAnalysis& analysis) override;
 	virtual void visit(const WindowSizeAnalysis& analysis) override;
+	virtual void visit(const SequenceNumberAnalysis& analysis) override;
 
 protected:
 	template <typename T> Json::Value buildKeyValue(const std::string& key, const T& value);

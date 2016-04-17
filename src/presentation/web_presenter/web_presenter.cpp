@@ -203,6 +203,50 @@ void WebPresenter::visit(const WindowSizeAnalysis& analysis)
 	_root["analyses_data"][snakeCaseString(analysis.name())] = data;
 }
 
+void WebPresenter::visit(const SequenceNumberAnalysis& analysis)
+{
+	Json::Value metadata;
+	metadata["id"] = snakeCaseString(analysis.name());
+	metadata["name"] = analysis.name();
+	metadata["dataType"] = "graph";
+	_root["analyses"].append(metadata);
+
+	const SequenceNumberOutput* output = static_cast<const SequenceNumberOutput*>(analysis.output());
+
+	Json::Value graph;
+	graph["title"]["text"] = analysis.name();
+	graph["chart"]["type"] = "line";
+	graph["chart"]["zoomType"] = "x";
+	graph["xAxis"]["title"]["text"] = "Time [ms]";
+	graph["yAxis"]["title"]["text"] = "Relative Sequence Number";
+	graph["tooltip"]["headerFormat"] = "";
+	Json::Value clientPlotData;
+	clientPlotData["name"] = "Client";
+	for (const auto& timeWindowSize : output->clientSeqNums)
+	{
+		Json::Value point;
+		point.append(timeWindowSize.first.count() / 1000.0); // In milliseconds.
+		point.append(timeWindowSize.second);
+		clientPlotData["data"].append(point);
+	}
+	Json::Value serverPlotData;
+	serverPlotData["name"] = "Server";
+	for (const auto& timeWindowSize : output->serverSeqNums)
+	{
+		Json::Value point;
+		point.append(timeWindowSize.first.count() / 1000.0); // In milliseconds.
+		point.append(timeWindowSize.second);
+		serverPlotData["data"].append(point);
+	}
+
+	graph["series"].append(clientPlotData);
+	graph["series"].append(serverPlotData);
+
+	Json::Value data;
+	data.append(graph);
+	_root["analyses_data"][snakeCaseString(analysis.name())] = data;
+}
+
 template <typename T> Json::Value WebPresenter::buildKeyValue(const std::string& key, const T& value)
 {
 	Json::Value keyValue;
