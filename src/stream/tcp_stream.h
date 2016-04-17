@@ -70,7 +70,13 @@ public:
 			return *this;
 		}
 		const iterator_impl<value_type, base_type>& operator -(int value) const { return *this + (-value); }
-		const iterator_impl<value_type, base_type>& operator -(const iterator_impl<value_type, base_type>& itr) const { return *this - itr._pos; }
+		std::int64_t operator -(const iterator_impl<value_type, base_type>& itr) const
+		{
+			if (_stream != itr._stream)
+				return std::numeric_limits<std::int64_t>::max();
+
+			return _pos - itr._pos;
+		}
 
 		// Can be compared with inequality relational operators (<, >, <= and >=)
 		bool operator <(const iterator_impl<value_type, base_type>& itr) const { return _pos < itr._pos; }
