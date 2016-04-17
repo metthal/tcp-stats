@@ -1,4 +1,5 @@
 #include <arpa/inet.h>
+#include <net/if_ppp.h>
 #include <netinet/ether.h>
 #include <netinet/ip.h>
 #include <netinet/tcp.h>
@@ -22,7 +23,7 @@ std::shared_ptr<TcpStream> PcapngParser::parse()
 
 	while (_file->nextPacket(data, timestamp))
 	{
-		auto packet = parsePacket(data, timestamp);
+		auto packet = parsePacket(data, timestamp, _file->getLinkLayerProtocol());
 		stream->addPacket(packet);
 	}
 
@@ -44,15 +45,31 @@ std::shared_ptr<TcpStream> PcapngParser::parse()
 	return stream;
 }
 
-std::shared_ptr<Packet> PcapngParser::parsePacket(const std::vector<std::uint8_t>& data, const timeval& timestamp)
+std::shared_ptr<Packet> PcapngParser::parsePacket(const std::vector<std::uint8_t>& data, const timeval& timestamp, std::int32_t llProto)
 {
-	const ether_header* ethernetHeader = reinterpret_cast<const ether_header*>(data.data());
-	if (ntohs(ethernetHeader->ether_type) != ETHERTYPE_IP)
+	std::size_t llHeaderSize = 0;
+	if (llProto == DLT_EN10MB)
 	{
-		throw UnsupportedIpProtocolException();
+		const ether_header* ethernetHeader = reinterpret_cast<const ether_header*>(data.data());
+		if (ntohs(ethernetHeader->ether_type) != ETHERTYPE_IP)
+		{
+			throw UnsupportedIpProtocolException();
+		}
+
+		llHeaderSize = sizeof(ether_header);
+	}
+	else if (llProto == DLT_PPP)
+	{
+		const std::int16_t* pppHeader = reinterpret_cast<const std::int16_t*>(data.data());
+		if (ntohs(*pppHeader) != PPP_IP)
+		{
+			throw UnsupportedIpProtocolException();
+		}
+
+		llHeaderSize = sizeof(std::int16_t);
 	}
 
-	const iphdr* ipHeader = reinterpret_cast<const iphdr*>(data.data() + sizeof(ether_header));
+	const iphdr* ipHeader = reinterpret_cast<const iphdr*>(data.data() + llHeaderSize);
 	if (ipHeader->version != 4)
 	{
 		throw UnsupportedIpProtocolException();
@@ -63,7 +80,7 @@ std::shared_ptr<Packet> PcapngParser::parsePacket(const std::vector<std::uint8_t
 		throw UnsupportedTransportProtocolException();
 	}
 
-	const tcphdr* tcpHeader = reinterpret_cast<const tcphdr*>(data.data() + sizeof(ether_header) + ipHeader->ihl * 4);
+	const tcphdr* tcpHeader = reinterpret_cast<const tcphdr*>(data.data() + llHeaderSize + ipHeader->ihl * 4);
 
 	auto packet = std::make_shared<Packet>();
 
@@ -84,8 +101,8 @@ std::shared_ptr<Packet> PcapngParser::parsePacket(const std::vector<std::uint8_t
 	packet->setUrgent(tcpHeader->urg);
 
 	std::vector<std::uint8_t> opts;
-	std::copy(data.data() + sizeof(ether_header) + ipHeader->ihl * 4 + sizeof(tcphdr),
-			data.data() + sizeof(ether_header) + ipHeader->ihl * 4 + tcpHeader->doff * 4,
+	std::copy(data.data() + llHeaderSize + ipHeader->ihl * 4 + sizeof(tcphdr),
+			data.data() + llHeaderSize + ipHeader->ihl * 4 + tcpHeader->doff * 4,
 			std::back_inserter(opts));
 
 	parseTcpOptions(opts, packet);

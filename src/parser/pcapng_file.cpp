@@ -1,7 +1,7 @@
 #include "parser/pcapng_file.h"
 #include "utils/exceptions.h"
 
-PcapngFile::PcapngFile(pcap_t* pcap) : _pcap(pcap)
+PcapngFile::PcapngFile(pcap_t* pcap, int llProto) : _pcap(pcap), _llProto(llProto)
 {
 }
 
@@ -14,12 +14,18 @@ std::unique_ptr<PcapngFile> PcapngFile::createFromPath(const std::string& filePa
 		throw InvalidInputFileException(filePath);
 	}
 
-	if (pcap_datalink(pcapHandle) != DLT_EN10MB)
+	int llProto = pcap_datalink(pcapHandle);
+	if (llProto != DLT_EN10MB && llProto != DLT_PPP)
 	{
 		throw UnsupportedDataLinkLayerException();
 	}
 
-	return std::make_unique<PcapngFile>(pcapHandle);
+	return std::make_unique<PcapngFile>(pcapHandle, llProto);
+}
+
+int PcapngFile::getLinkLayerProtocol() const
+{
+	return _llProto;
 }
 
 bool PcapngFile::nextPacket(std::vector<std::uint8_t>& packet, timeval& timestamp)

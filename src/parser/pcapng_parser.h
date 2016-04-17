@@ -15,7 +15,7 @@ public:
 	std::shared_ptr<TcpStream> parse();
 
 private:
-	std::shared_ptr<Packet> parsePacket(const std::vector<std::uint8_t>& data, const timeval& timestamp);
+	std::shared_ptr<Packet> parsePacket(const std::vector<std::uint8_t>& data, const timeval& timestamp, std::int32_t llProto);
 	void parseTcpOptions(const std::vector<std::uint8_t>& data, std::shared_ptr<Packet>& packet);
 	std::string parseIp(std::uint32_t addr);
 

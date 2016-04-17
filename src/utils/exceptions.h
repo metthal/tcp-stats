@@ -46,7 +46,7 @@ class UnsupportedDataLinkLayerException : public BaseException
 {
 public:
 	UnsupportedDataLinkLayerException() :
-		BaseException("Unsupported link-layer protocol. Ethernet expected.")
+		BaseException("Unsupported link-layer protocol. Ethernet or PPP expected.")
 	{}
 };
 
