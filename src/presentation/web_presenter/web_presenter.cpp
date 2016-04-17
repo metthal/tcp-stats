@@ -174,7 +174,7 @@ void WebPresenter::visit(const WindowSizeAnalysis& analysis)
 	graph["chart"]["type"] = "line";
 	graph["chart"]["zoomType"] = "x";
 	graph["xAxis"]["title"]["text"] = "Time [ms]";
-	graph["yAxis"]["title"]["text"] = "Window Size";
+	graph["yAxis"]["title"]["text"] = "Window Size [B]";
 	graph["tooltip"]["headerFormat"] = "";
 	Json::Value clientPlotData;
 	clientPlotData["name"] = "Client";
