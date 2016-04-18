@@ -66,7 +66,7 @@ public:
 		// Supports the arithmetic operators + and - between an iterator and an integer value, or subtracting an iterator from another.
 		const iterator_impl<value_type, base_type>& operator +(int value) const
 		{
-			_pos = std::max(0l, std::min(static_cast<std::int64_t>(_stream->_packets.size()), _pos + value));
+			_pos = std::max(static_cast<std::int64_t>(0), std::min(static_cast<std::int64_t>(_stream->_packets.size()), _pos + value));
 			return *this;
 		}
 		const iterator_impl<value_type, base_type>& operator -(int value) const { return *this + (-value); }
