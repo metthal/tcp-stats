@@ -2,6 +2,7 @@
 
 #include "analysis/rtt_analysis/rtt_analysis.h"
 #include "analysis/stream_analysis_visitor.h"
+#include "utils/make_unique.h"
 
 void RttAnalysis::accept(StreamAnalysisVisitor& visitor)
 {

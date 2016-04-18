@@ -1,5 +1,6 @@
 #include "analysis/sequence_number_analysis/sequence_number_analysis.h"
 #include "analysis/stream_analysis_visitor.h"
+#include "utils/make_unique.h"
 
 void SequenceNumberAnalysis::accept(StreamAnalysisVisitor& visitor)
 {

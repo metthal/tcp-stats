@@ -1,5 +1,6 @@
 #include "analysis/overall_info_analysis/overall_info_analysis.h"
 #include "analysis/stream_analysis_visitor.h"
+#include "utils/make_unique.h"
 
 void OverallInfoAnalysis::accept(StreamAnalysisVisitor& visitor)
 {

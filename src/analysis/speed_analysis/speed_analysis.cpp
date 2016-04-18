@@ -2,6 +2,7 @@
 
 #include "analysis/speed_analysis/speed_analysis.h"
 #include "analysis/stream_analysis_visitor.h"
+#include "utils/make_unique.h"
 
 void SpeedAnalysis::accept(StreamAnalysisVisitor& visitor)
 {

@@ -5,6 +5,7 @@
 #include "analysis/analysis_manager.h"
 #include "presentation/all_presenters.h"
 #include "utils/exceptions.h"
+#include "utils/make_unique.h"
 
 void printHelp()
 {

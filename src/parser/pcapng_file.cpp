@@ -1,5 +1,6 @@
 #include "parser/pcapng_file.h"
 #include "utils/exceptions.h"
+#include "utils/make_unique.h"
 
 PcapngFile::PcapngFile(pcap_t* pcap, int llProto) : _pcap(pcap), _llProto(llProto)
 {

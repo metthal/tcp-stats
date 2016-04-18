@@ -1,5 +1,6 @@
 #include "analysis/window_size_analysis/window_size_analysis.h"
 #include "analysis/stream_analysis_visitor.h"
+#include "utils/make_unique.h"
 
 void WindowSizeAnalysis::accept(StreamAnalysisVisitor& visitor)
 {
