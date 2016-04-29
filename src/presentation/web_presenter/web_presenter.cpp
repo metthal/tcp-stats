@@ -28,6 +28,8 @@ void WebPresenter::visit(const OverallInfoAnalysis& analysis)
 	Json::Value data;
 	data.append(buildKeyValue("Client IP", output->clientIp));
 	data.append(buildKeyValue("Server IP", output->serverIp));
+	data.append(buildKeyValue("Client port", convertToString(output->clientPort)));
+	data.append(buildKeyValue("Server port", convertToString(output->serverPort)));
 	data.append(buildKeyValue("Number of packets", convertToString(output->numberOfPackets)));
 	data.append(buildKeyValue("Connection established on", timestampToDateTime(output->firstPacketTime)));
 	data.append(buildKeyValue("Connection finished on", timestampToDateTime(output->lastPacketTime)));

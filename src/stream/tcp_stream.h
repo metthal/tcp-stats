@@ -128,6 +128,8 @@ public:
 
 	std::string getClientIp() const;
 	std::string getServerIp() const;
+	std::uint16_t getClientPort() const;
+	std::uint16_t getServerPort() const;
 	std::uint32_t getWindowSize(std::uint64_t packetIndex) const;
 	std::uint32_t getWindowSize(const Packet* packet) const;
 	std::uint32_t getRelativeSequenceNumber(std::uint64_t packetIndex) const;

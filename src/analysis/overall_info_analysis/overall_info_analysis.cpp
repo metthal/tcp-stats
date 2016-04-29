@@ -11,6 +11,8 @@ void OverallInfoAnalysis::run(const TcpStream& stream)
 	auto output = std::make_unique<OverallInfoOutput>();
 	output->clientIp = stream.getClientIp();
 	output->serverIp = stream.getServerIp();
+	output->clientPort = stream.getClientPort();
+	output->serverPort = stream.getServerPort();
 	output->numberOfPackets = stream.getNumberOfPackets();
 	output->firstPacketTime = stream.getStartTime();
 	output->lastPacketTime = stream.getEndTime();

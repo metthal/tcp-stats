@@ -106,6 +106,22 @@ std::string TcpStream::getServerIp() const
 	return (*this)[1]->getSourceIp();
 }
 
+std::uint16_t TcpStream::getClientPort() const
+{
+	if (getNumberOfPackets() < 2)
+		return 0;
+
+	return (*this)[0]->getSourcePort();
+}
+
+std::uint16_t TcpStream::getServerPort() const
+{
+	if (getNumberOfPackets() < 2)
+		return 0;
+
+	return (*this)[1]->getSourcePort();
+}
+
 std::uint32_t TcpStream::getWindowSize(std::uint64_t packetIndex) const
 {
 	return getWindowSize((*this)[packetIndex]);
