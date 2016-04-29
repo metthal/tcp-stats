@@ -12,6 +12,8 @@ public:
 
 	std::string clientIp;
 	std::string serverIp;
+	std::uint16_t clientPort;
+	std::uint16_t serverPort;
 	Packet::Timestamp firstPacketTime;
 	Packet::Timestamp lastPacketTime;
 	std::chrono::microseconds duration;
