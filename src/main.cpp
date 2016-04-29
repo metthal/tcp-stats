@@ -5,6 +5,7 @@
 #include "analysis/analysis_manager.h"
 #include "presentation/all_presenters.h"
 #include "utils/exceptions.h"
+#include "utils/filesystem.h"
 
 void printHelp()
 {
@@ -35,6 +36,9 @@ int main(int argc, char* argv[])
 
 	try
 	{
+		if (!directoryExists("log"))
+			createDirectory("log");
+
 		auto pcapFile = PcapngFile::createFromPath(std::string{argv[1]});
 
 		auto pcapParser = PcapngParser(std::move(pcapFile));
@@ -44,7 +48,7 @@ int main(int argc, char* argv[])
 
 		WebPresenter webPresenter;
 		AnalysisManager::instance().visitAll(webPresenter);
-		webPresenter.present("xmilko01.json");
+		webPresenter.present("log/xmilko01.json");
 	}
 	catch (const BaseException& ex)
 	{
