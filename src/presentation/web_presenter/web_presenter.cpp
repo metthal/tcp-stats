@@ -17,11 +17,7 @@ void WebPresenter::present(const std::string& fileName)
 
 void WebPresenter::visit(const OverallInfoAnalysis& analysis)
 {
-	Json::Value metadata;
-	metadata["id"] = snakeCaseString(analysis.name());
-	metadata["name"] = analysis.name();
-	metadata["dataType"] = "key_value";
-	_root["analyses"].append(metadata);
+	buildMetadata(analysis.name(), "key_value");
 
 	const OverallInfoOutput* output = static_cast<const OverallInfoOutput*>(analysis.output());
 
@@ -41,41 +37,22 @@ void WebPresenter::visit(const OverallInfoAnalysis& analysis)
 
 void WebPresenter::visit(const RttAnalysis& analysis)
 {
-	Json::Value metadata;
-	metadata["id"] = snakeCaseString(analysis.name());
-	metadata["name"] = analysis.name();
-	metadata["dataType"] = "graph";
-	_root["analyses"].append(metadata);
+	buildMetadata(analysis.name(), "graph");
 
 	const RttOutput* output = static_cast<const RttOutput*>(analysis.output());
 
-	Json::Value graph;
-	graph["title"]["text"] = analysis.name();
-	graph["chart"]["type"] = "line";
-	graph["chart"]["zoomType"] = "x";
-	graph["xAxis"]["title"]["text"] = "Relative Packet Time [ms]";
-	graph["yAxis"]["title"]["text"] = "RTT [ms]";
+	Json::Value graph = buildGraph(analysis.name(), "Relative Packet Time [ms]", "RTT [ms]");
 	graph["tooltip"]["valueSuffix"] = " ms";
 
-	Json::Value clientPlotData;
-	clientPlotData["name"] = "Client";
-	for (const auto& seqRtt : output->clientRtt)
-	{
-		Json::Value point;
-		point.append(seqRtt.first.count() / 1000.0); // In milliseconds.
-		point.append(seqRtt.second.count() / 1000.0); // In milliseconds.
-		clientPlotData["data"].append(point);
-	}
+	auto usecToMs = [](const std::chrono::microseconds& t) { return t.count() / 1000.0; };
 
-	Json::Value serverPlotData;
+	Json::Value clientPlotData = buildPlotData<std::chrono::microseconds, std::chrono::microseconds, double, double>(output->clientRtt.begin(),
+			output->clientRtt.end(), usecToMs, usecToMs);
+	clientPlotData["name"] = "Client";
+
+	Json::Value serverPlotData = buildPlotData<std::chrono::microseconds, std::chrono::microseconds, double, double>(output->serverRtt.begin(),
+			output->serverRtt.end(), usecToMs, usecToMs);
 	serverPlotData["name"] = "Server";
-	for (const auto& seqRtt : output->serverRtt)
-	{
-		Json::Value point;
-		point.append(seqRtt.first.count() / 1000.0); // In milliseconds.
-		point.append(seqRtt.second.count() / 1000.0); // In milliseconds.
-		serverPlotData["data"].append(point);
-	}
 
 	graph["series"].append(clientPlotData);
 	graph["series"].append(serverPlotData);
@@ -87,72 +64,43 @@ void WebPresenter::visit(const RttAnalysis& analysis)
 
 void WebPresenter::visit(const SpeedAnalysis& analysis)
 {
-	Json::Value metadata;
-	metadata["id"] = snakeCaseString(analysis.name());
-	metadata["name"] = analysis.name();
-	metadata["dataType"] = "graph";
-	_root["analyses"].append(metadata);
+	buildMetadata(analysis.name(), "graph");
 
 	const SpeedOutput* output = static_cast<const SpeedOutput*>(analysis.output());
 
-	Json::Value clientToServerGraph;
-	clientToServerGraph["title"]["text"] = "Client to Server " + analysis.name();
-	clientToServerGraph["chart"]["type"] = "line";
-	clientToServerGraph["chart"]["zoomType"] = "x";
-	clientToServerGraph["xAxis"]["title"]["text"] = "Time [ms]";
-	clientToServerGraph["yAxis"]["title"]["text"] = "Speed [kB/s]";
+	auto usecToMs = [](const std::chrono::microseconds& t) { return t.count() / 1000.0; };
+	auto bToKb = [](const std::uint64_t& b) { return b / 1024.0; };
+
+	Json::Value clientToServerGraph = buildGraph("Client to Server " + analysis.name(), "Time [ms]", "Speed [kB/s]");
 	clientToServerGraph["tooltip"]["headerFormat"] = "";
 	clientToServerGraph["tooltip"]["pointFormat"] = "<span>{point.x} ms: <b>{point.y}</b></span>";
 	clientToServerGraph["tooltip"]["valueSuffix"] = " kB/s";
 	clientToServerGraph["tooltip"]["valueDecimals"] = 2;
-	Json::Value clientPlotData, clientPlotAvgData;
+
+	Json::Value clientPlotData = buildPlotData<std::chrono::microseconds, std::uint64_t, double, double>(output->clientToServerSpeed.begin(),
+			output->clientToServerSpeed.end(), usecToMs, bToKb);
 	clientPlotData["name"] = "Immediate";
-	for (const auto& timeSpeed : output->clientToServerSpeed)
-	{
-		Json::Value point;
-		point.append(timeSpeed.first.count() / 1000.0); // In milliseconds.
-		point.append(timeSpeed.second / 1024.0); // In kilobytes.
-		clientPlotData["data"].append(point);
-	}
-	clientPlotAvgData["name"] = "Average";
-	for (const auto& timeSpeed : output->clientToServerAvgSpeed)
-	{
-		Json::Value point;
-		point.append(timeSpeed.first.count() / 1000.0); // In milliseconds.
-		point.append(timeSpeed.second / 1024.0); // In kilobytes.
-		clientPlotAvgData["data"].append(point);
-	}
 	clientToServerGraph["series"].append(clientPlotData);
+
+	Json::Value clientPlotAvgData = buildPlotData<std::chrono::microseconds, std::uint64_t, double, double>(output->clientToServerAvgSpeed.begin(),
+			output->clientToServerAvgSpeed.end(), usecToMs, bToKb);
+	clientPlotAvgData["name"] = "Average";
 	clientToServerGraph["series"].append(clientPlotAvgData);
 
-	Json::Value serverToClientGraph;
-	serverToClientGraph["title"]["text"] = "Server to Client " + analysis.name();
-	serverToClientGraph["chart"]["type"] = "line";
-	serverToClientGraph["chart"]["zoomType"] = "x";
-	serverToClientGraph["xAxis"]["title"]["text"] = "Time [ms]";
-	serverToClientGraph["yAxis"]["title"]["text"] = "Speed [kB/s]";
+	Json::Value serverToClientGraph = buildGraph("Server to Client " + analysis.name(), "Time [ms]", "Speed [kB/s]");
 	serverToClientGraph["tooltip"]["headerFormat"] = "";
 	serverToClientGraph["tooltip"]["pointFormat"] = "<span>{point.x} ms: <b>{point.y}</b></span>";
 	serverToClientGraph["tooltip"]["valueSuffix"] = " kB/s";
 	serverToClientGraph["tooltip"]["valueDecimals"] = 2;
-	Json::Value serverPlotData, serverPlotAvgData;
+
+	Json::Value serverPlotData = buildPlotData<std::chrono::microseconds, std::uint64_t, double, double>(output->serverToClientSpeed.begin(),
+			output->serverToClientSpeed.end(), usecToMs, bToKb);
 	serverPlotData["name"] = "Immediate";
-	for (const auto& timeSpeed : output->serverToClientSpeed)
-	{
-		Json::Value point;
-		point.append(timeSpeed.first.count() / 1000.0); // In milliseconds.
-		point.append(timeSpeed.second / 1024.0); // In kilobytes.
-		serverPlotData["data"].append(point);
-	}
-	serverPlotAvgData["name"] = "Average";
-	for (const auto& timeSpeed : output->serverToClientAvgSpeed)
-	{
-		Json::Value point;
-		point.append(timeSpeed.first.count() / 1000.0); // In milliseconds.
-		point.append(timeSpeed.second / 1024.0); // In kilobytes.
-		serverPlotAvgData["data"].append(point);
-	}
 	serverToClientGraph["series"].append(serverPlotData);
+
+	Json::Value serverPlotAvgData = buildPlotData<std::chrono::microseconds, std::uint64_t, double, double>(output->serverToClientAvgSpeed.begin(),
+			output->serverToClientAvgSpeed.end(), usecToMs, bToKb);
+	serverPlotAvgData["name"] = "Average";
 	serverToClientGraph["series"].append(serverPlotAvgData);
 
 	Json::Value data;
@@ -163,41 +111,24 @@ void WebPresenter::visit(const SpeedAnalysis& analysis)
 
 void WebPresenter::visit(const WindowSizeAnalysis& analysis)
 {
-	Json::Value metadata;
-	metadata["id"] = snakeCaseString(analysis.name());
-	metadata["name"] = analysis.name();
-	metadata["dataType"] = "graph";
-	_root["analyses"].append(metadata);
+	buildMetadata(analysis.name(), "graph");
 
 	const WindowSizeOutput* output = static_cast<const WindowSizeOutput*>(analysis.output());
 
-	Json::Value graph;
-	graph["title"]["text"] = analysis.name();
-	graph["chart"]["type"] = "line";
-	graph["chart"]["zoomType"] = "x";
-	graph["xAxis"]["title"]["text"] = "Time [ms]";
-	graph["yAxis"]["title"]["text"] = "Window Size [B]";
-	graph["tooltip"]["headerFormat"] = "";
-	Json::Value clientPlotData;
-	clientPlotData["name"] = "Client";
-	for (const auto& timeWindowSize : output->clientWindowSize)
-	{
-		Json::Value point;
-		point.append(timeWindowSize.first.count() / 1000.0); // In milliseconds.
-		point.append(timeWindowSize.second);
-		clientPlotData["data"].append(point);
-	}
-	Json::Value serverPlotData;
-	serverPlotData["name"] = "Server";
-	for (const auto& timeWindowSize : output->serverWindowSize)
-	{
-		Json::Value point;
-		point.append(timeWindowSize.first.count() / 1000.0); // In milliseconds.
-		point.append(timeWindowSize.second);
-		serverPlotData["data"].append(point);
-	}
+	auto usecToMs = [](const std::chrono::microseconds& t) { return t.count() / 1000.0; };
+	auto id = [](const std::uint32_t& b) { return b; };
 
+	Json::Value graph = buildGraph(analysis.name(), "Time [ms]", "Window Size [B]");
+	graph["tooltip"]["headerFormat"] = "";
+
+	Json::Value clientPlotData = buildPlotData<std::chrono::microseconds, std::uint32_t, double, std::uint32_t>(output->clientWindowSize.begin(),
+			output->clientWindowSize.end(), usecToMs, id);
+	clientPlotData["name"] = "Client";
 	graph["series"].append(clientPlotData);
+
+	Json::Value serverPlotData = buildPlotData<std::chrono::microseconds, std::uint32_t, double, std::uint32_t>(output->serverWindowSize.begin(),
+			output->serverWindowSize.end(), usecToMs, id);
+	serverPlotData["name"] = "Server";
 	graph["series"].append(serverPlotData);
 
 	Json::Value data;
@@ -207,46 +138,38 @@ void WebPresenter::visit(const WindowSizeAnalysis& analysis)
 
 void WebPresenter::visit(const SequenceNumberAnalysis& analysis)
 {
-	Json::Value metadata;
-	metadata["id"] = snakeCaseString(analysis.name());
-	metadata["name"] = analysis.name();
-	metadata["dataType"] = "graph";
-	_root["analyses"].append(metadata);
+	buildMetadata(analysis.name(), "graph");
 
 	const SequenceNumberOutput* output = static_cast<const SequenceNumberOutput*>(analysis.output());
 
-	Json::Value graph;
-	graph["title"]["text"] = analysis.name();
-	graph["chart"]["type"] = "line";
-	graph["chart"]["zoomType"] = "x";
-	graph["xAxis"]["title"]["text"] = "Time [ms]";
-	graph["yAxis"]["title"]["text"] = "Relative Sequence Number";
-	graph["tooltip"]["headerFormat"] = "";
-	Json::Value clientPlotData;
-	clientPlotData["name"] = "Client";
-	for (const auto& timeWindowSize : output->clientSeqNums)
-	{
-		Json::Value point;
-		point.append(timeWindowSize.first.count() / 1000.0); // In milliseconds.
-		point.append(timeWindowSize.second);
-		clientPlotData["data"].append(point);
-	}
-	Json::Value serverPlotData;
-	serverPlotData["name"] = "Server";
-	for (const auto& timeWindowSize : output->serverSeqNums)
-	{
-		Json::Value point;
-		point.append(timeWindowSize.first.count() / 1000.0); // In milliseconds.
-		point.append(timeWindowSize.second);
-		serverPlotData["data"].append(point);
-	}
+	auto usecToMs = [](const std::chrono::microseconds& t) { return t.count() / 1000.0; };
+	auto id = [](const std::uint32_t& b) { return b; };
 
+	Json::Value graph = buildGraph(analysis.name(), "Time [ms]", "Relative Sequence Number");
+	graph["tooltip"]["headerFormat"] = "";
+
+	Json::Value clientPlotData = buildPlotData<std::chrono::microseconds, std::uint32_t, double, std::uint32_t>(output->clientSeqNums.begin(),
+			output->clientSeqNums.end(), usecToMs, id);
+	clientPlotData["name"] = "Client";
 	graph["series"].append(clientPlotData);
+
+	Json::Value serverPlotData = buildPlotData<std::chrono::microseconds, std::uint32_t, double, std::uint32_t>(output->serverSeqNums.begin(),
+			output->serverSeqNums.end(), usecToMs, id);
+	serverPlotData["name"] = "Server";
 	graph["series"].append(serverPlotData);
 
 	Json::Value data;
 	data.append(graph);
 	_root["analyses_data"][snakeCaseString(analysis.name())] = data;
+}
+
+void WebPresenter::buildMetadata(const std::string& name, const std::string& type)
+{
+	Json::Value metadata;
+	metadata["id"] = snakeCaseString(name);
+	metadata["name"] = name;
+	metadata["dataType"] = type;
+	_root["analyses"].append(metadata);
 }
 
 template <typename T> Json::Value WebPresenter::buildKeyValue(const std::string& key, const T& value)
@@ -255,4 +178,36 @@ template <typename T> Json::Value WebPresenter::buildKeyValue(const std::string&
 	keyValue["key"] = key;
 	keyValue["value"] = value;
 	return keyValue;
+}
+
+Json::Value WebPresenter::buildGraph(const std::string& title, const std::string& xAxisTitle, const std::string& yAxisTitle)
+{
+	Json::Value graph;
+	graph["title"]["text"] = title;
+	graph["chart"]["type"] = "line";
+	graph["chart"]["zoomType"] = "x";
+	graph["xAxis"]["title"]["text"] = xAxisTitle;
+	graph["yAxis"]["title"]["text"] = yAxisTitle;
+	graph["plotOptions"]["series"]["boostThreshold"] = "1000";
+	return graph;
+}
+
+template <typename T, typename U, typename XT, typename YT> Json::Value WebPresenter::buildPlotData(
+		const typename std::map<T,U>::const_iterator& begin, const typename std::map<T,U>::const_iterator& end,
+		const std::function<XT(const T&)>& xTransform, const std::function<YT(const U&)>& yTransform)
+{
+	Json::Value plotData;
+	for (auto itr = begin; itr != end; ++itr)
+	{
+		XT x = xTransform(itr->first);
+		YT y = yTransform(itr->second);
+
+		Json::Value point;
+		point.append(x);
+		point.append(y);
+
+		plotData["data"].append(point);
+	}
+
+	return plotData;
 }
