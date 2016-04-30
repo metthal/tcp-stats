@@ -32,8 +32,49 @@
 		</div>
 	</div>
 	<div id="about-container" class="container">
-		<div class="about">
+		<div class="about text-justify">
 			<h1>About</h1>
+			<p>
+				This project was created for course Data Communications, Computer Networks and Protocols at Faculty of Information Technology, Brno University of Technology in 2016. Author
+				of this project is <a href="mailto:xmilko01@stud.fit.vutbr.cz">Marek Milkovič</a>.
+			</p>
+			<h2>Description</h2>
+			<p>
+				TCP Stats is application capable of analyzing TCP stream stored in <a href="https://wiki.wireshark.org/Development/PcapNg">pcapng</a> format and storing the analyses results in JSON
+				format. The application is shipped with this web page, which visualize output in JSON file into HTML form.
+			</p>
+			<h2>Dependencies</h2>
+			<ul>
+				<li>g++/clang++ with C++11 support</li>
+				<li>CMake 2.8+</li>
+				<li>libpcap 0.8+</li>
+				<li>jsoncpp 0.6+</li>
+			</ul>
+			<h2>Compilation</h2>
+			<p>
+				TCP Stats can be compiled either by running script <code>run-build.sh</code> shipped with the application or manually by configuring CMake.
+				<ul>
+					<li><b>Compiling with script</b> - run <code>./run-build.sh</code> in projects home directory.</li>
+					<li><b>Manual configuration</b> - run <code>cmake</code> in project home directory or any other CMake tool</li>
+				</ul>
+			</p>
+			<h2>Running</h2>
+			<p>
+				TCP Stats has only one startup argument and that is input pcap file with valid TCP stream. TCP stream is considered valid if
+				<ul>
+					<li>Only single stream is present in the input file.</li>
+					<li>Stream is captured with its handshake, not necessarily with the termination of the connection.</li>
+				</ul>
+			</p>
+			<h2>Visualization</h2>
+			<p>
+				Visualization of output data on this web page is performed using several libraries.
+				<ul>
+					<li><b>jQuery</b> - prerequisite of other libraries</li>
+					<li><b>Bootstrap</b> - layout, design and UI elements</li>
+					<li><b>Highcharts</b> - library for plotting charts</li>
+				</ul>
+			</p>
 		</div>
 	</div>
 </body>
